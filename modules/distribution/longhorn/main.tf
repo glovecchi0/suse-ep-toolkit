@@ -61,6 +61,8 @@ resource "helm_release" "longhorn" {
   values = [
     <<EOF
 defaultSettings:
+  defaultDataPath: /var/lib/rancher/longhorn
+  defaultReplicaCount: 1
   deletingConfirmationFlag: true
   storageOverProvisioningPercentage: 300
 
