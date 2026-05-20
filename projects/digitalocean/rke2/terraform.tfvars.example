@@ -67,6 +67,9 @@ suse_observability_enabled = false
 ## -- Specifies the SUSE Observability Helm chart version to install.
 suse_observability_version = null
 
+## -- Specifies the SUSE Observability deployment sizing profile. Supported values depend on the Helm chart configuration.
+suse_observability_profile = "trial"
+
 ## -- Specifies the SUSE Observability license key required for installation.
 suse_observability_license = null
 

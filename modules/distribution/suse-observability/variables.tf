@@ -16,6 +16,12 @@ variable "suse_observability_version" {
   default     = null
 }
 
+variable "suse_observability_profile" {
+  description = "Specifies the SUSE Observability deployment sizing profile. Supported values depend on the Helm chart configuration. Default is 'trial'."
+  type        = string
+  default     = "trial"
+}
+
 variable "suse_observability_license" {
   description = "Specifies the SUSE Observability license key required for installation. Default is 'null'."
   type        = string

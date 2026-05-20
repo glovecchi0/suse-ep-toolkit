@@ -16,22 +16,20 @@ global:
     license: "${var.suse_observability_license}"
     baseUrl: "https://${var.suse_observability_host}"
     adminPassword: "${var.suse_observability_admin_password}"
+    sizing:
+      profile: "${var.suse_observability_profile}"
 
-stackstate:
-  ingress:
-    enabled: true
-
-    ingressClassName: traefik
-
-    hosts:
-      - host: ${var.suse_observability_host}
-        paths:
-          - /
-
-    tls:
-      - secretName: suse-observability-tls
-        hosts:
-          - ${var.suse_observability_host}
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hosts:
+    - host: ${var.suse_observability_host}
+      paths:
+        - /
+  tls:
+    - secretName: suse-observability-tls
+      hosts:
+        - ${var.suse_observability_host}
 EOF
   ]
 }

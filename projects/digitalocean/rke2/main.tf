@@ -156,6 +156,7 @@ module "suse_observability" {
   depends_on                        = [module.rke2_first_server, module.longhorn]
   suse_observability_enabled        = var.suse_observability_enabled
   suse_observability_version        = var.suse_observability_version
+  suse_observability_profile        = var.suse_observability_profile
   suse_observability_license        = var.suse_observability_license
   suse_observability_admin_password = var.suse_observability_admin_password
   suse_observability_host           = "observability.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
