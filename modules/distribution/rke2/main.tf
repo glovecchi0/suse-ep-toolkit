@@ -1,14 +1,11 @@
 locals {
   install_type = var.node_role
-
-  base_config = <<-EOF
+  base_config  = <<-EOF
 token: ${var.rke2_token}
 write-kubeconfig-mode: "0644"
 ingress-controller: ${var.rke2_ingress}
 EOF
-
-  join_config = var.server_url != null ? "server: ${var.server_url}" : ""
-
+  join_config  = var.server_url != null ? "server: ${var.server_url}" : ""
   final_config = trimspace(
     join("\n", compact([
       local.base_config,

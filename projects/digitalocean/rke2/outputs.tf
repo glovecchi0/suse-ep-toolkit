@@ -21,3 +21,7 @@ output "rancher_url" {
 output "observability_url" {
   value = var.suse_observability_enabled ? "https://observability.${module.rke2_first_server.instances_public_ip[0]}.sslip.io" : null
 }
+
+output "neuvector_url" {
+  value = var.neuvector_enabled ? "https://neuvector.${module.rke2_first_server.instances_public_ip[0]}.sslip.io" : null
+}

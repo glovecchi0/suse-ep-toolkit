@@ -148,7 +148,7 @@ variable "rancher_version" {
 variable "rancher_bootstrap_password" {
   description = "Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters when Rancher is enabled. Default is 'null'."
   type        = string
-  default     = null
+  default     = ""
   sensitive   = true
   validation {
     condition = (
@@ -203,7 +203,7 @@ variable "suse_observability_profile" {
 variable "suse_observability_license" {
   description = "Specifies the SUSE Observability license key required for installation. Default is 'null'."
   type        = string
-  default     = null
+  default     = ""
   sensitive   = true
   validation {
     condition = (
@@ -220,7 +220,7 @@ variable "suse_observability_license" {
 variable "suse_observability_admin_password" {
   description = "Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters when enabled. Default is 'null'."
   type        = string
-  default     = null
+  default     = ""
   sensitive   = true
   validation {
     condition = (
@@ -231,5 +231,37 @@ variable "suse_observability_admin_password" {
       )
     )
     error_message = "When enabled is true, suse_observability_admin_password must be specified and contain at least 12 characters."
+  }
+}
+
+variable "neuvector_enabled" {
+  description = "Specifies whether NeuVector should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+}
+
+variable "neuvector_version" {
+  description = "Specifies the NeuVector Helm chart version to install. Default is 'null' (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "neuvector_admin_password" {
+  description = "Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is 'null'."
+  type        = string
+  default     = ""
+  sensitive   = true
+  validation {
+    condition = (
+      var.neuvector_enabled == false ||
+      (
+        var.neuvector_admin_password != null &&
+        length(var.neuvector_admin_password) >= 12 &&
+        can(regex("[A-Z]", var.neuvector_admin_password)) &&
+        can(regex("[0-9]", var.neuvector_admin_password)) &&
+        can(regex("[^A-Za-z0-9]", var.neuvector_admin_password))
+      )
+    )
+    error_message = "Password must be ≥12 chars, include at least 1 uppercase letter, 1 number, and 1 special character."
   }
 }

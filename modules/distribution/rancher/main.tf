@@ -23,11 +23,9 @@ extraEnv:
 
 ingress:
   ingressClassName: traefik
-
   tls:
     source: secret
     secretName: tls-rancher-ingress
-
   extraAnnotations:
     traefik.ingress.kubernetes.io/proxy-read-timeout: "3600"
     traefik.ingress.kubernetes.io/proxy-send-timeout: "3600"

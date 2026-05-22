@@ -162,3 +162,14 @@ module "suse_observability" {
   suse_observability_host           = "observability.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
   kubeconfig_path                   = local_file.kubeconfig_yaml.filename
 }
+
+module "neuvector" {
+  source                   = "../../../modules/distribution/neuvector"
+  depends_on               = concat([module.rke2_first_server], var.longhorn_enabled ? [module.longhorn] : [])
+  neuvector_enabled        = var.neuvector_enabled
+  neuvector_version        = var.neuvector_version
+  neuvector_host           = "neuvector.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  neuvector_admin_password = var.neuvector_admin_password
+  longhorn_enabled         = var.longhorn_enabled
+  kubeconfig_path          = local_file.kubeconfig_yaml.filename
+}

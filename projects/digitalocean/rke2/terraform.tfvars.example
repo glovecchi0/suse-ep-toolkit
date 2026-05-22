@@ -75,3 +75,12 @@ suse_observability_license = null
 
 ## -- Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters when enabled.
 suse_observability_admin_password = null
+
+## -- Specifies whether NeuVector should be installed on the Kubernetes cluster.
+neuvector_enabled = false
+
+## -- Specifies the NeuVector Helm chart version to install.
+neuvector_version = null
+
+## -- Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+neuvector_admin_password = null
