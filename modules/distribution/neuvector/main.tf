@@ -9,7 +9,7 @@ resource "helm_release" "neuvector" {
   version          = var.neuvector_hc_version
   values = [
     <<EOF
-tag: ${var.neuvector_version}
+${var.neuvector_version != "" ? "tag: ${var.neuvector_version}" : ""}
 
 controller:
   replicas: ${var.neuvector_controller_count}

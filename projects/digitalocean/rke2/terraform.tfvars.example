@@ -83,7 +83,7 @@ neuvector_enabled = false
 neuvector_hc_version = null
 
 ## -- Specifies the NeuVector application version deployed by the Helm chart.
-neuvector_version = null
+neuvector_version = ""
 
 ## -- Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
 neuvector_admin_password = null

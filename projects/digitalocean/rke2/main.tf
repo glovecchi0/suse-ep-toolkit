@@ -144,7 +144,7 @@ module "longhorn" {
 
 module "rancher" {
   source                     = "../../../modules/distribution/rancher"
-  depends_on                 = [module.rke2_first_server]
+  depends_on                 = [module.rke2_first_server, module.longhorn]
   rancher_enabled            = var.rancher_enabled
   rancher_hc_version         = var.rancher_hc_version
   rancher_hostname           = "rancher.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
@@ -166,7 +166,7 @@ module "suse_observability" {
 
 module "neuvector" {
   source                     = "../../../modules/distribution/neuvector"
-  depends_on                 = concat([module.rke2_first_server], var.longhorn_enabled ? [module.longhorn] : [])
+  depends_on                 = [module.rke2_first_server, module.longhorn]
   neuvector_enabled          = var.neuvector_enabled
   neuvector_hc_version       = var.neuvector_hc_version
   neuvector_version          = var.neuvector_version

@@ -247,12 +247,12 @@ variable "neuvector_hc_version" {
 }
 
 variable "neuvector_version" {
-  description = "Specifies the NeuVector application version deployed by the Helm chart. Default is 'null' (chart default version)."
+  description = "Specifies the NeuVector application version deployed by the Helm chart. Default is empty (chart default version)."
   type        = string
-  default     = null
+  default     = ""
   validation {
     condition = (
-      var.neuvector_version == null ||
+      var.neuvector_version == "" ||
       can(regex("^\\d+\\.\\d+\\.\\d+$", var.neuvector_version))
     )
     error_message = "neuvector_version must use semantic version format 'x.y.z' (e.g. 5.5.1 or 5.0.1)."
