@@ -137,6 +137,13 @@ variable "rancher_enabled" {
   description = "Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
+  validation {
+    condition = (
+      var.longhorn_enabled == false ||
+      var.instance_count >= 3
+    )
+    error_message = "When longhorn_enabled is true, instance_count must be at least 3."
+  }
 }
 
 variable "rancher_hc_version" {
