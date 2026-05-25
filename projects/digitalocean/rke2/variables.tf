@@ -125,6 +125,13 @@ variable "longhorn_enabled" {
   description = "Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
+  validation {
+    condition = (
+      var.longhorn_enabled == false ||
+      var.instance_count >= 3
+    )
+    error_message = "When longhorn_enabled is true, instance_count must be at least 3."
+  }
 }
 
 variable "longhorn_hc_version" {
@@ -139,10 +146,10 @@ variable "rancher_enabled" {
   default     = false
   validation {
     condition = (
-      var.longhorn_enabled == false ||
-      var.instance_count >= 3
+      var.rancher_enabled == false ||
+      var.longhorn_enabled == true
     )
-    error_message = "When longhorn_enabled is true, instance_count must be at least 3."
+    error_message = "When rancher_enabled is true, longhorn_enabled must also be true."
   }
 }
 
