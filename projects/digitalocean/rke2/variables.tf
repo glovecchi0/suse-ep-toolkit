@@ -127,7 +127,7 @@ variable "longhorn_enabled" {
   default     = false
 }
 
-variable "longhorn_version" {
+variable "longhorn_hc_version" {
   description = "Specifies the Longhorn Helm chart version to install. Default is 'null' (latest version)."
   type        = string
   default     = null
@@ -139,7 +139,7 @@ variable "rancher_enabled" {
   default     = false
 }
 
-variable "rancher_version" {
+variable "rancher_hc_version" {
   description = "Specifies the Rancher Helm chart version to install. Default is 'null' (latest version)."
   type        = string
   default     = null
@@ -188,7 +188,7 @@ variable "suse_observability_enabled" {
   }
 }
 
-variable "suse_observability_version" {
+variable "suse_observability_hc_version" {
   description = "Specifies the SUSE Observability Helm chart version to install. Default is null (latest version). Default is 'null'."
   type        = string
   default     = null
@@ -240,10 +240,23 @@ variable "neuvector_enabled" {
   default     = false
 }
 
-variable "neuvector_version" {
+variable "neuvector_hc_version" {
   description = "Specifies the NeuVector Helm chart version to install. Default is 'null' (latest version)."
   type        = string
   default     = null
+}
+
+variable "neuvector_version" {
+  description = "Specifies the NeuVector application version deployed by the Helm chart. Default is 'null' (chart default version)."
+  type        = string
+  default     = null
+  validation {
+    condition = (
+      var.neuvector_version == null ||
+      can(regex("^\\d+\\.\\d+\\.\\d+$", var.neuvector_version))
+    )
+    error_message = "neuvector_version must use semantic version format 'x.y.z' (e.g. 5.5.1 or 5.0.1)."
+  }
 }
 
 variable "neuvector_admin_password" {
@@ -264,4 +277,16 @@ variable "neuvector_admin_password" {
     )
     error_message = "Password must be ≥12 chars, include at least 1 uppercase letter, 1 number, and 1 special character."
   }
+}
+
+variable "neuvector_controller_count" {
+  description = "Specifies the number of NeuVector controller replicas to deploy. Default is 'null'."
+  type        = number
+  default     = null
+}
+
+variable "neuvector_scanner_count" {
+  description = "Specifies the number of NeuVector scanner replicas to deploy. Default is 'null'."
+  type        = number
+  default     = null
 }

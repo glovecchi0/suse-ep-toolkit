@@ -6,11 +6,13 @@ resource "helm_release" "neuvector" {
   chart            = "core"
   namespace        = "cattle-neuvector-system"
   create_namespace = true
-  version          = var.neuvector_version
+  version          = var.neuvector_hc_version
   values = [
     <<EOF
+tag: ${var.neuvector_version}
+
 controller:
-  replicas: 3
+  replicas: ${var.neuvector_controller_count}
   nodeSelector:
     node-role.kubernetes.io/control-plane: "true"
   secret:
@@ -52,7 +54,7 @@ controller:
 
 cve:
   scanner:
-    replicas: 2
+    replicas: ${var.neuvector_scanner_count}
     nodeSelector:
       node-role.kubernetes.io/control-plane: "true"
 

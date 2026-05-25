@@ -28,7 +28,7 @@ variable "ssh_user" {
   default     = "opensuse"
 }
 
-variable "longhorn_version" {
+variable "longhorn_hc_version" {
   description = "Specifies the Longhorn Helm chart version to install. Default is null (latest version). Default is 'null'."
   type        = string
   default     = null

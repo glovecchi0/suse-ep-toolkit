@@ -6,7 +6,7 @@ resource "helm_release" "suse_observability" {
   chart            = "suse-observability"
   namespace        = "suse-observability"
   create_namespace = true
-  version          = var.suse_observability_version
+  version          = var.suse_observability_hc_version
   values = [
     <<EOF
 global:

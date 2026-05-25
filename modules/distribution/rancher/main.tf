@@ -5,7 +5,7 @@ resource "helm_release" "rancher" {
   namespace        = "cattle-system"
   repository       = "https://releases.rancher.com/server-charts/stable"
   chart            = "rancher"
-  version          = var.rancher_version
+  version          = var.rancher_hc_version
   create_namespace = true
   values = [
     <<EOF

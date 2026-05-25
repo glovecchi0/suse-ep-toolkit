@@ -34,9 +34,12 @@ No modules.
 | <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to kubeconfig file used by kubectl. Default is 'null'. | `string` | `null` | no |
 | <a name="input_longhorn_enabled"></a> [longhorn\_enabled](#input\_longhorn\_enabled) | Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
 | <a name="input_neuvector_admin_password"></a> [neuvector\_admin\_password](#input\_neuvector\_admin\_password) | Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is 'null'. | `string` | `""` | no |
+| <a name="input_neuvector_controller_count"></a> [neuvector\_controller\_count](#input\_neuvector\_controller\_count) | Specifies the number of NeuVector controller replicas to deploy. Default is 'null'. | `number` | `null` | no |
 | <a name="input_neuvector_enabled"></a> [neuvector\_enabled](#input\_neuvector\_enabled) | Specifies whether NeuVector should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
+| <a name="input_neuvector_hc_version"></a> [neuvector\_hc\_version](#input\_neuvector\_hc\_version) | Specifies the NeuVector Helm chart version to install. Default is 'null' (latest version). | `string` | `null` | no |
 | <a name="input_neuvector_host"></a> [neuvector\_host](#input\_neuvector\_host) | Specifies the hostname used to expose NeuVector via Ingress (e.g. sslip.io or custom domain). Default is 'null'. | `string` | `null` | no |
-| <a name="input_neuvector_version"></a> [neuvector\_version](#input\_neuvector\_version) | Specifies the NeuVector Helm chart version to install. Default is 'null' (latest version). | `string` | `null` | no |
+| <a name="input_neuvector_scanner_count"></a> [neuvector\_scanner\_count](#input\_neuvector\_scanner\_count) | Specifies the number of NeuVector scanner replicas to deploy. Default is 'null'. | `number` | `null` | no |
+| <a name="input_neuvector_version"></a> [neuvector\_version](#input\_neuvector\_version) | Specifies the NeuVector application version deployed by the Helm chart. Default is 'null' (chart default version). | `string` | `null` | no |
 
 ## Outputs
 

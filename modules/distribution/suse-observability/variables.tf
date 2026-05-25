@@ -10,7 +10,7 @@ variable "suse_observability_host" {
   default     = null
 }
 
-variable "suse_observability_version" {
+variable "suse_observability_hc_version" {
   description = "Specifies the SUSE Observability Helm chart version to install. Default is 'null' (latest version)."
   type        = string
   default     = null

@@ -4,7 +4,7 @@ variable "rancher_enabled" {
   default     = false
 }
 
-variable "rancher_version" {
+variable "rancher_hc_version" {
   description = "Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'."
   type        = string
   default     = null
