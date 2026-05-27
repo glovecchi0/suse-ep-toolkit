@@ -30,7 +30,7 @@ variable "neuvector_version" {
 }
 
 variable "neuvector_admin_password" {
-  description = "Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is 'null'."
+  description = "Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is empty."
   type        = string
   default     = ""
   sensitive   = true
@@ -58,6 +58,18 @@ variable "neuvector_controller_count" {
 variable "neuvector_scanner_count" {
   description = "Specifies the number of NeuVector scanner replicas to deploy. Default is 'null'."
   type        = number
+  default     = null
+}
+
+variable "rancher_enabled" {
+  description = "Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+}
+
+variable "rancher_host" {
+  description = "Specifies the hostname used to expose Rancher via Ingress. Default is 'null'."
+  type        = string
   default     = null
 }
 

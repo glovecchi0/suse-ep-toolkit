@@ -9,7 +9,7 @@ resource "helm_release" "rancher" {
   create_namespace = true
   values = [
     <<EOF
-hostname: ${var.rancher_hostname}
+hostname: ${var.rancher_host}
 
 bootstrapPassword: ${var.rancher_bootstrap_password}
 
@@ -17,7 +17,7 @@ privateCA: true
 
 extraEnv:
   - name: CATTLE_SERVER_URL
-    value: https://${var.rancher_hostname}
+    value: https://${var.rancher_host}
   - name: CATTLE_TUNNEL_TIMEOUT
     value: "3600"
 

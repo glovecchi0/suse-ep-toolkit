@@ -40,19 +40,22 @@ variable "suse_observability_license" {
 }
 
 variable "suse_observability_admin_password" {
-  description = "Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters when enabled. Default is 'null'."
+  description = "Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is empty."
   type        = string
-  default     = null
+  default     = ""
   sensitive   = true
   validation {
     condition = (
       var.suse_observability_enabled == false ||
       (
         var.suse_observability_admin_password != null &&
-        length(var.suse_observability_admin_password) >= 12
+        length(var.suse_observability_admin_password) >= 12 &&
+        can(regex("[A-Z]", var.suse_observability_admin_password)) &&
+        can(regex("[0-9]", var.suse_observability_admin_password)) &&
+        can(regex("[^A-Za-z0-9]", var.suse_observability_admin_password))
       )
     )
-    error_message = "When enabled is true, suse_observability_admin_password must be specified and contain at least 12 characters."
+    error_message = "When suse_observability_enabled is true, suse_observability_admin_password must be at least 12 characters long and include at least 1 uppercase letter, 1 number, and 1 special character."
   }
 }
 

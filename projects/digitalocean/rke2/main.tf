@@ -4,17 +4,21 @@ resource "random_string" "rke2_token" {
 }
 
 locals {
-  ssh_private_key_path = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
-  ssh_public_key_path  = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
-  ssh_username         = "opensuse"
-  kubeconfig_file      = "${path.cwd}/${var.prefix}_kubeconfig.yml"
-  instance_type        = var.instance_type
-  rke2_token           = random_string.rke2_token.result
-  first_server_url     = "https://${module.rke2_first_server.instances_public_ip[0]}:9345"
-  server_count         = var.instance_count < 3 ? var.instance_count : 3
-  server_nodes         = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
-  worker_count         = var.instance_count > 3 ? var.instance_count - 3 : 0
-  worker_nodes         = [for i in range(1, local.worker_count + 1) : tostring(i)]
+  ssh_private_key_path    = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
+  ssh_public_key_path     = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
+  ssh_username            = "opensuse"
+  kubeconfig_file         = "${path.cwd}/${var.prefix}_kubeconfig.yml"
+  instance_type           = var.instance_type
+  rke2_token              = random_string.rke2_token.result
+  first_server_url        = "https://${module.rke2_first_server.instances_public_ip[0]}:9345"
+  server_count            = var.instance_count < 3 ? var.instance_count : 3
+  server_nodes            = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
+  worker_count            = var.instance_count > 3 ? var.instance_count - 3 : 0
+  worker_nodes            = [for i in range(1, local.worker_count + 1) : tostring(i)]
+  longhorn_host           = "longhorn.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  rancher_host            = "rancher.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  suse_observability_host = "observability.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  neuvector_host          = "neuvector.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
 }
 
 module "identity" {
@@ -128,12 +132,13 @@ provider "helm" {
 }
 
 module "longhorn" {
-  source              = "../../../modules/distribution/longhorn"
-  depends_on          = [module.rke2_first_server]
-  longhorn_enabled    = var.longhorn_enabled
-  longhorn_hc_version = var.longhorn_hc_version
-  longhorn_host       = "longhorn.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
-  ssh_private_key     = data.local_file.ssh_private_key.content
+  source                  = "../../../modules/distribution/longhorn"
+  depends_on              = [module.rke2_first_server]
+  longhorn_enabled        = var.longhorn_enabled
+  longhorn_admin_password = var.longhorn_admin_password
+  longhorn_hc_version     = var.longhorn_hc_version
+  longhorn_host           = local.longhorn_host
+  ssh_private_key         = data.local_file.ssh_private_key.content
   node_ips = concat(
     [module.rke2_first_server.instances_public_ip[0]],
     flatten([for m in module.rke2_servers : m.instances_public_ip]),
@@ -147,7 +152,7 @@ module "rancher" {
   depends_on                 = [module.rke2_first_server, module.longhorn]
   rancher_enabled            = var.rancher_enabled
   rancher_hc_version         = var.rancher_hc_version
-  rancher_hostname           = "rancher.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  rancher_host               = local.rancher_host
   rancher_bootstrap_password = var.rancher_bootstrap_password
   kubeconfig_path            = local_file.kubeconfig_yaml.filename
 }
@@ -160,20 +165,22 @@ module "suse_observability" {
   suse_observability_profile        = var.suse_observability_profile
   suse_observability_license        = var.suse_observability_license
   suse_observability_admin_password = var.suse_observability_admin_password
-  suse_observability_host           = "observability.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  suse_observability_host           = local.suse_observability_host
   kubeconfig_path                   = local_file.kubeconfig_yaml.filename
 }
 
 module "neuvector" {
   source                     = "../../../modules/distribution/neuvector"
-  depends_on                 = [module.rke2_first_server, module.longhorn]
+  depends_on                 = [module.rke2_first_server, module.longhorn, module.rancher]
   neuvector_enabled          = var.neuvector_enabled
   neuvector_hc_version       = var.neuvector_hc_version
   neuvector_version          = var.neuvector_version
-  neuvector_host             = "neuvector.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  neuvector_host             = local.neuvector_host
   neuvector_admin_password   = var.neuvector_admin_password
   neuvector_controller_count = var.instance_count
   neuvector_scanner_count    = (var.instance_count == 1 ? 1 : min(var.instance_count - 1, 3))
+  rancher_enabled            = var.rancher_enabled
+  rancher_host               = (var.rancher_enabled ? local.rancher_host : null)
   longhorn_enabled           = var.longhorn_enabled
   kubeconfig_path            = local_file.kubeconfig_yaml.filename
 }

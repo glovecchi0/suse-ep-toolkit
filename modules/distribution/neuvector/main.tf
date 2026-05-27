@@ -11,6 +11,10 @@ resource "helm_release" "neuvector" {
     <<EOF
 ${var.neuvector_version != "" ? "tag: ${var.neuvector_version}" : ""}
 
+global:
+  cattle:
+    url: "https://${var.rancher_host}"
+
 controller:
   replicas: ${var.neuvector_controller_count}
   nodeSelector:
@@ -26,7 +30,7 @@ controller:
           Password: 
           Role: admin
   ranchersso:
-    enabled: false
+    enabled: ${var.rancher_enabled}
   pvc:
     enabled: ${var.longhorn_enabled}
     storageClass: ${var.longhorn_enabled ? "longhorn" : "null"}

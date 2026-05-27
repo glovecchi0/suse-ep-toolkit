@@ -134,6 +134,26 @@ variable "longhorn_enabled" {
   }
 }
 
+variable "longhorn_admin_password" {
+  description = "Specifies the Longhorn administrator password used for securing the Longhorn UI via basic authentication. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is 'null'."
+  type        = string
+  default     = null
+  sensitive   = true
+  validation {
+    condition = (
+      var.longhorn_enabled == false ||
+      (
+        var.longhorn_admin_password != null &&
+        length(var.longhorn_admin_password) >= 12 &&
+        can(regex("[A-Z]", var.longhorn_admin_password)) &&
+        can(regex("[0-9]", var.longhorn_admin_password)) &&
+        can(regex("[^A-Za-z0-9]", var.longhorn_admin_password))
+      )
+    )
+    error_message = "When longhorn_enabled is true, longhorn_admin_password must be at least 12 characters long and include at least 1 uppercase letter, 1 number, and 1 special character."
+  }
+}
+
 variable "longhorn_hc_version" {
   description = "Specifies the Longhorn Helm chart version to install. Default is 'null' (latest version)."
   type        = string
@@ -160,7 +180,7 @@ variable "rancher_hc_version" {
 }
 
 variable "rancher_bootstrap_password" {
-  description = "Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters when Rancher is enabled. Default is 'null'."
+  description = "Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled. Default is empty."
   type        = string
   default     = ""
   sensitive   = true
@@ -169,10 +189,13 @@ variable "rancher_bootstrap_password" {
       var.rancher_enabled == false ||
       (
         var.rancher_bootstrap_password != null &&
-        length(var.rancher_bootstrap_password) >= 12
+        length(var.rancher_bootstrap_password) >= 12 &&
+        can(regex("[A-Z]", var.rancher_bootstrap_password)) &&
+        can(regex("[0-9]", var.rancher_bootstrap_password)) &&
+        can(regex("[^A-Za-z0-9]", var.rancher_bootstrap_password))
       )
     )
-    error_message = "When rancher_enabled is true, rancher_bootstrap_password must be specified and contain at least 12 characters."
+    error_message = "When rancher_enabled is true, rancher_bootstrap_password must be at least 12 characters long and include at least 1 uppercase letter, 1 number, and 1 special character."
   }
 }
 
@@ -232,7 +255,7 @@ variable "suse_observability_license" {
 }
 
 variable "suse_observability_admin_password" {
-  description = "Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters when enabled. Default is 'null'."
+  description = "Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is empty."
   type        = string
   default     = ""
   sensitive   = true
@@ -241,10 +264,13 @@ variable "suse_observability_admin_password" {
       var.suse_observability_enabled == false ||
       (
         var.suse_observability_admin_password != null &&
-        length(var.suse_observability_admin_password) >= 12
+        length(var.suse_observability_admin_password) >= 12 &&
+        can(regex("[A-Z]", var.suse_observability_admin_password)) &&
+        can(regex("[0-9]", var.suse_observability_admin_password)) &&
+        can(regex("[^A-Za-z0-9]", var.suse_observability_admin_password))
       )
     )
-    error_message = "When enabled is true, suse_observability_admin_password must be specified and contain at least 12 characters."
+    error_message = "When suse_observability_enabled is true, suse_observability_admin_password must be at least 12 characters long and include at least 1 uppercase letter, 1 number, and 1 special character."
   }
 }
 
@@ -274,7 +300,7 @@ variable "neuvector_version" {
 }
 
 variable "neuvector_admin_password" {
-  description = "Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is 'null'."
+  description = "Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is empty."
   type        = string
   default     = ""
   sensitive   = true
