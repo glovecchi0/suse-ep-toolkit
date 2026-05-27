@@ -5,11 +5,11 @@ resource "helm_release" "rancher" {
   namespace        = "cattle-system"
   repository       = "https://releases.rancher.com/server-charts/stable"
   chart            = "rancher"
-  version          = var.rancher_version
+  version          = var.rancher_hc_version
   create_namespace = true
   values = [
     <<EOF
-hostname: ${var.rancher_hostname}
+hostname: ${var.rancher_host}
 
 bootstrapPassword: ${var.rancher_bootstrap_password}
 
@@ -17,17 +17,15 @@ privateCA: true
 
 extraEnv:
   - name: CATTLE_SERVER_URL
-    value: https://${var.rancher_hostname}
+    value: https://${var.rancher_host}
   - name: CATTLE_TUNNEL_TIMEOUT
     value: "3600"
 
 ingress:
   ingressClassName: traefik
-
   tls:
     source: secret
     secretName: tls-rancher-ingress
-
   extraAnnotations:
     traefik.ingress.kubernetes.io/proxy-read-timeout: "3600"
     traefik.ingress.kubernetes.io/proxy-send-timeout: "3600"

@@ -31,11 +31,11 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to kubeconfig file used by kubectl. Default is 'null'. | `string` | `null` | no |
-| <a name="input_rancher_bootstrap_password"></a> [rancher\_bootstrap\_password](#input\_rancher\_bootstrap\_password) | Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters when Rancher is enabled. Default is 'null'. | `string` | `null` | no |
+| <a name="input_rancher_bootstrap_password"></a> [rancher\_bootstrap\_password](#input\_rancher\_bootstrap\_password) | Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled. Default is empty. | `string` | `""` | no |
 | <a name="input_rancher_enabled"></a> [rancher\_enabled](#input\_rancher\_enabled) | Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
-| <a name="input_rancher_hostname"></a> [rancher\_hostname](#input\_rancher\_hostname) | Specifies the hostname used to expose Rancher via Ingress. Default is 'null'. | `string` | `null` | no |
+| <a name="input_rancher_hc_version"></a> [rancher\_hc\_version](#input\_rancher\_hc\_version) | Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'. | `string` | `null` | no |
+| <a name="input_rancher_host"></a> [rancher\_host](#input\_rancher\_host) | Specifies the hostname used to expose Rancher via Ingress. Default is 'null'. | `string` | `null` | no |
 | <a name="input_rancher_tls_source"></a> [rancher\_tls\_source](#input\_rancher\_tls\_source) | Specifies the TLS certificate source used by Rancher. Default is 'letsEncrypt'. | `string` | `"letsEncrypt"` | no |
-| <a name="input_rancher_version"></a> [rancher\_version](#input\_rancher\_version) | Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'. | `string` | `null` | no |
 
 ## Outputs
 

@@ -1,14 +1,12 @@
 resource "helm_release" "suse_observability" {
   count            = var.suse_observability_enabled ? 1 : 0
+  depends_on       = [null_resource.suse_obs_tls_secret]
   name             = "suse-observability"
   repository       = "https://charts.rancher.com/server-charts/prime/suse-observability"
   chart            = "suse-observability"
   namespace        = "suse-observability"
   create_namespace = true
-  version          = var.suse_observability_version
-  depends_on = [
-    null_resource.suse_obs_tls_secret
-  ]
+  version          = var.suse_observability_hc_version
   values = [
     <<EOF
 global:

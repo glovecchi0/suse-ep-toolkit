@@ -7,7 +7,7 @@ resource "tls_self_signed_cert" "ca" {
   private_key_pem   = tls_private_key.ca.private_key_pem
   is_ca_certificate = true
   subject {
-    common_name = "${var.rancher_hostname}-ca"
+    common_name = "${var.rancher_host}-ca"
   }
   validity_period_hours = 87600
   allowed_uses = [
@@ -25,10 +25,10 @@ resource "tls_private_key" "rancher" {
 resource "tls_cert_request" "rancher" {
   private_key_pem = tls_private_key.rancher.private_key_pem
   subject {
-    common_name = var.rancher_hostname
+    common_name = var.rancher_host
   }
   dns_names = [
-    var.rancher_hostname
+    var.rancher_host
   ]
 }
 
