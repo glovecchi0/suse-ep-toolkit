@@ -4,21 +4,23 @@ resource "random_string" "rke2_token" {
 }
 
 locals {
-  ssh_private_key_path    = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
-  ssh_public_key_path     = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
-  ssh_username            = "opensuse"
-  kubeconfig_file         = "${path.cwd}/${var.prefix}_kubeconfig.yml"
-  instance_type           = var.instance_type
-  rke2_token              = random_string.rke2_token.result
-  first_server_url        = "https://${module.rke2_first_server.instances_public_ip[0]}:9345"
-  server_count            = var.instance_count < 3 ? var.instance_count : 3
-  server_nodes            = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
-  worker_count            = var.instance_count > 3 ? var.instance_count - 3 : 0
-  worker_nodes            = [for i in range(1, local.worker_count + 1) : tostring(i)]
-  longhorn_host           = "longhorn.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
-  rancher_host            = "rancher.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
-  suse_observability_host = "observability.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
-  neuvector_host          = "neuvector.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
+  ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
+  ssh_username                      = "opensuse"
+  kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
+  instance_type                     = var.instance_type
+  rke2_token                        = random_string.rke2_token.result
+  first_server_url                  = "https://${module.rke2_first_server.instances_public_ip[0]}:9345"
+  server_count                      = var.instance_count < 3 ? var.instance_count : 3
+  server_nodes                      = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
+  worker_count                      = var.instance_count > 3 ? var.instance_count - 3 : 0
+  worker_nodes                      = [for i in range(1, local.worker_count + 1) : tostring(i)]
+  longhorn_host                     = "longhorn.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  rancher_host                      = "rancher.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  suse_observability_host           = "observability.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  suse_observability_otlp_host      = "otlp-${local.suse_observability_host}"
+  suse_observability_otlp_http_host = "otlp-http-${local.suse_observability_host}"
+  neuvector_host                    = "neuvector.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
 }
 
 module "identity" {
@@ -159,13 +161,18 @@ module "rancher" {
 
 module "suse_observability" {
   source                            = "../../../modules/distribution/suse-observability"
-  depends_on                        = [module.rke2_first_server, module.longhorn]
+  depends_on                        = [module.rke2_first_server, module.longhorn, module.rancher]
   suse_observability_enabled        = var.suse_observability_enabled
   suse_observability_hc_version     = var.suse_observability_hc_version
   suse_observability_profile        = var.suse_observability_profile
   suse_observability_license        = var.suse_observability_license
   suse_observability_admin_password = var.suse_observability_admin_password
   suse_observability_host           = local.suse_observability_host
+  suse_observability_otlp_host      = local.suse_observability_otlp_host
+  suse_observability_otlp_http_host = local.suse_observability_otlp_http_host
+  suse_observability_rancher_auth   = var.suse_observability_rancher_auth
+  rancher_enabled                   = var.rancher_enabled
+  rancher_host                      = local.rancher_host
   kubeconfig_path                   = local_file.kubeconfig_yaml.filename
 }
 

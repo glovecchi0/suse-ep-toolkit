@@ -53,10 +53,10 @@ Rancher requires:
 Example:
 
 ```hcl
-longhorn_enabled            = true
+longhorn_enabled           = true
 
-rancher_enabled             = true
-rancher_bootstrap_password  = "************"
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
 ```
 
 ## SUSE Observability
@@ -71,11 +71,28 @@ SUSE Observability requires:
 Example:
 
 ```hcl
-longhorn_enabled                    = true
+longhorn_enabled                  = true
 
-suse_observability_enabled          = true
-suse_observability_license          = "<LICENSE>"
-suse_observability_admin_password   = "************"
+suse_observability_enabled        = true
+suse_observability_license        = "<LICENSE>"
+suse_observability_admin_password = "************"
+```
+
+If Rancher is enabled and you want to take advantage of Single sign-on login:
+
+- `rancher_enabled = true`
+- `suse_observability_rancher_auth = true`
+
+Example:
+
+```hcl
+longhorn_enabled                = true
+
+rancher_enabled                 = true
+
+suse_observability_enabled      = true
+suse_observability_license      = "<LICENSE>"
+suse_observability_rancher_auth = true
 ```
 
 ## NeuVector
@@ -87,8 +104,8 @@ If Rancher is enabled, NeuVector automatically configures Rancher SSO integratio
 Example:
 
 ```hcl
-neuvector_enabled          = true
-neuvector_admin_password   = "************"
+neuvector_enabled        = true
+neuvector_admin_password = "************"
 ```
 
 # Example deployment scenarios
@@ -96,7 +113,7 @@ neuvector_admin_password   = "************"
 ## Minimal single-node RKE2 cluster
 
 ```hcl
-prefix         = "glovecchio"
+prefix         = "<PREFIX>"
 do_token       = "<DIGITALOCEAN_TOKEN>"
 instance_count = 1
 ```
@@ -104,50 +121,50 @@ instance_count = 1
 ## HA RKE2 cluster with Longhorn
 
 ```hcl
-prefix                    = "glovecchio"
-do_token                  = "<DIGITALOCEAN_TOKEN>"
+prefix                  = "<PREFIX>"
+do_token                = "<DIGITALOCEAN_TOKEN>"
 
-instance_count            = 3
+instance_count          = 3
 
-longhorn_enabled          = true
-longhorn_admin_password   = "************"
+longhorn_enabled        = true
+longhorn_admin_password = "************"
 ```
 
 ## HA RKE2 cluster with Rancher
 
 ```hcl
-prefix                        = "glovecchio"
-do_token                      = "<DIGITALOCEAN_TOKEN>"
+prefix                     = "<PREFIX>"
+do_token                   = "<DIGITALOCEAN_TOKEN>"
 
-instance_count                = 3
+instance_count             = 3
 
-longhorn_enabled              = true
-longhorn_admin_password       = "************"
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
 
-rancher_enabled               = true
-rancher_bootstrap_password    = "************"
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
 ```
 
 ## Full stack deployment
 
 ```hcl
-prefix                                = "glovecchio"
-do_token                              = "<DIGITALOCEAN_TOKEN>"
+prefix                          = "<PREFIX>"
+do_token                        = "<DIGITALOCEAN_TOKEN>"
 
-instance_count                        = 3
+instance_count                  = 3
 
-longhorn_enabled                      = true
-longhorn_admin_password               = "************"
+longhorn_enabled                = true
+longhorn_admin_password         = "************"
 
-rancher_enabled                       = true
-rancher_bootstrap_password            = "************"
+rancher_enabled                 = true
+rancher_bootstrap_password      = "************"
 
-neuvector_enabled                     = true
-neuvector_admin_password              = "************"
+neuvector_enabled               = true
+neuvector_admin_password        = "************"
 
-suse_observability_enabled            = true
-suse_observability_license            = "<LICENSE>"
-suse_observability_admin_password     = "************"
+suse_observability_enabled      = true
+suse_observability_license      = "<LICENSE>"
+suse_observability_rancher_auth = true
 ```
 
 # Terraform Apply
@@ -184,26 +201,12 @@ After deployment:
 export KUBECONFIG=<PREFIX>_kube_config.yaml
 ```
 
-Example:
-
-```bash
-export KUBECONFIG=glovecchio_kube_config.yaml
-```
-
 # How to access cluster nodes
 
 ```bash
 ssh -oStrictHostKeyChecking=no \
   -i <PREFIX>-ssh_private_key.pem \
   opensuse@<PUBLIC_IPV4>
-```
-
-Example:
-
-```bash
-ssh -oStrictHostKeyChecking=no \
-  -i glovecchio-ssh_private_key.pem \
-  opensuse@1.2.3.4
 ```
 
 # Exposed services
@@ -216,11 +219,15 @@ Depending on enabled components, the following services become available:
 | Longhorn | `https://longhorn.<NODE_IP>.sslip.io` |
 | NeuVector | `https://neuvector.<NODE_IP>.sslip.io` |
 | SUSE Observability | `https://suse-observability.<NODE_IP>.sslip.io` |
+| OpenTelemetry (OTLP/gRPC) | `https://otlp-observability.<NODE_IP>.sslip.io` |
+| OpenTelemetry (OTLP/HTTP) | `https://otlp-http-observability.<NODE_IP>.sslip.io` |
 
 # Notes
 
 - TLS certificates are automatically generated
 - Longhorn UI is protected with Traefik Basic Authentication
 - NeuVector automatically integrates with Rancher SSO when Rancher is enabled
+- SUSE Observability supports Rancher OIDC authentication, which can be enabled by setting `suse_observability_rancher_auth = true`
+- When SUSE Observability is enabled, dedicated Ingress resources for OTLP/gRPC and OTLP/HTTP are automatically created to expose the OpenTelemetry Collector
 - `sslip.io` is used by default for automatic DNS resolution
 - Multi-node deployments automatically configure HA RKE2 server nodes

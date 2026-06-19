@@ -62,7 +62,7 @@ variable "data_disk_size" {
 }
 
 variable "image_id" {
-  description = "Specifies the ID of the custom OS image used to provision all RKE2 cluster droplets. Defailt is empty."
+  description = "Specifies the ID of the custom OS image used to provision all RKE2 cluster droplets. Default is empty."
   type        = string
   default     = ""
 }
@@ -271,6 +271,16 @@ variable "suse_observability_admin_password" {
       )
     )
     error_message = "When suse_observability_enabled is true, suse_observability_admin_password must be at least 12 characters long and include at least 1 uppercase letter, 1 number, and 1 special character."
+  }
+}
+
+variable "suse_observability_rancher_auth" {
+  description = "Specifies whether Rancher should be used as the OIDC provider for SUSE Observability. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition     = var.suse_observability_rancher_auth == false || var.rancher_enabled
+    error_message = "When suse_observability_rancher_auth is true, Rancher must be enabled."
   }
 }
 
