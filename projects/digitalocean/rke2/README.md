@@ -78,6 +78,23 @@ suse_observability_license          = "<LICENSE>"
 suse_observability_admin_password   = "************"
 ```
 
+If Rancher is enabled and you want to take advantage of Single sign-on login:
+
+- `rancher_enabled = true`
+- `suse_observability_rancher_auth = true`
+
+Example:
+
+```hcl
+longhorn_enabled                    = true
+
+rancher_enabled                     = true
+
+suse_observability_enabled          = true
+suse_observability_license          = "<LICENSE>"
+suse_observability_rancher_auth     = false
+```
+
 ## NeuVector
 
 NeuVector can be enabled independently.
