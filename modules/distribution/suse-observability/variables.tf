@@ -77,6 +77,12 @@ variable "kubeconfig_path" {
   default     = null
 }
 
+variable "rancher_enabled" {
+  description = "Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+}
+
 variable "rancher_host" {
   description = "Specifies the hostname used to expose Rancher via Ingress. Default is 'null'."
   type        = string

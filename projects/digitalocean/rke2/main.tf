@@ -171,6 +171,7 @@ module "suse_observability" {
   suse_observability_otlp_host      = local.suse_observability_otlp_host
   suse_observability_otlp_http_host = local.suse_observability_otlp_http_host
   suse_observability_rancher_auth   = var.suse_observability_rancher_auth
+  rancher_enabled                   = var.rancher_enabled
   rancher_host                      = local.rancher_host
   kubeconfig_path                   = local_file.kubeconfig_yaml.filename
 }
