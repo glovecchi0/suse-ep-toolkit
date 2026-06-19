@@ -34,7 +34,6 @@ data "external" "suse_observability_oidc_rancher" {
   ]
 }
 
-
 resource "helm_release" "suse_observability" {
   count            = var.suse_observability_enabled ? 1 : 0
   depends_on       = [null_resource.suse_obs_tls_secret, data.external.suse_observability_oidc_rancher]

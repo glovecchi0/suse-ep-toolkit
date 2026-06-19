@@ -248,7 +248,6 @@ variable "suse_observability_license" {
       (
         var.suse_observability_license != null &&
         length(var.suse_observability_license) > 0
-
       )
     )
     error_message = "When suse_observability_enabled is true, suse_observability_license must be specified."
@@ -276,12 +275,12 @@ variable "suse_observability_admin_password" {
 }
 
 variable "suse_observability_rancher_auth" {
-  description = "Enable Rancher as OIDC provider on SUSE Observability"
-  default     = false
+  description = "Specifies whether Rancher should be used as the OIDC provider for SUSE Observability. Default is 'false'."
   type        = bool
+  default     = false
   validation {
-    condition = var.suse_observability_rancher_auth == false || var.rancher_enabled
-    error_message = "suse_observability_rancher_auth requires rancher_enabled to be true"
+    condition     = var.suse_observability_rancher_auth == false || var.rancher_enabled
+    error_message = "When suse_observability_rancher_auth is true, Rancher must be enabled."
   }
 }
 

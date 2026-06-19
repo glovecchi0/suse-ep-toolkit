@@ -78,13 +78,17 @@ variable "kubeconfig_path" {
 }
 
 variable "rancher_host" {
-  description = "Specifies the hostname used to expose Rancher via Ingress (e.g. sslip.io or custom domain). Default is 'null'."
+  description = "Specifies the hostname used to expose Rancher via Ingress. Default is 'null'."
   type        = string
   default     = null
 }
 
 variable "suse_observability_rancher_auth" {
-  description = "Enabled Rancher as OIDC provider on SUSE Observability"
-  default     = false
+  description = "Specifies whether Rancher should be used as the OIDC provider for SUSE Observability. Default is 'false'."
   type        = bool
+  default     = false
+  validation {
+    condition     = var.suse_observability_rancher_auth == false || var.rancher_enabled
+    error_message = "When suse_observability_rancher_auth is true, Rancher must be enabled."
+  }
 }
