@@ -248,6 +248,7 @@ variable "suse_observability_license" {
       (
         var.suse_observability_license != null &&
         length(var.suse_observability_license) > 0
+
       )
     )
     error_message = "When suse_observability_enabled is true, suse_observability_license must be specified."
@@ -279,7 +280,7 @@ variable "suse_observability_rancher_auth" {
   default     = false
   type        = bool
   validation {
-    condition     = var.suse_observability_rancher_auth ? var.rancher_enabled : true
+    condition = var.suse_observability_rancher_auth == false || var.rancher_enabled
     error_message = "suse_observability_rancher_auth requires rancher_enabled to be true"
   }
 }
