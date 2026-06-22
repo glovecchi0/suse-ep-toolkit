@@ -29,7 +29,7 @@ module "identity" {
 }
 
 module "os_image" {
-  source = "../../../modules/custom-os-image"
+  source = "../../../modules/custom-os-image/digitalocean"
   prefix = var.prefix
   region = var.region
 }

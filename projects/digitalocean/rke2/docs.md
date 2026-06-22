@@ -24,7 +24,7 @@
 | <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh | n/a |
 | <a name="module_longhorn"></a> [longhorn](#module\_longhorn) | ../../../modules/distribution/longhorn | n/a |
 | <a name="module_neuvector"></a> [neuvector](#module\_neuvector) | ../../../modules/distribution/neuvector | n/a |
-| <a name="module_os_image"></a> [os\_image](#module\_os\_image) | ../../../modules/custom-os-image | n/a |
+| <a name="module_os_image"></a> [os\_image](#module\_os\_image) | ../../../modules/custom-os-image/digitalocean | n/a |
 | <a name="module_rancher"></a> [rancher](#module\_rancher) | ../../../modules/distribution/rancher | n/a |
 | <a name="module_rke2_additional_servers"></a> [rke2\_additional\_servers](#module\_rke2\_additional\_servers) | ../../../modules/distribution/rke2 | n/a |
 | <a name="module_rke2_additional_workers"></a> [rke2\_additional\_workers](#module\_rke2\_additional\_workers) | ../../../modules/distribution/rke2 | n/a |
