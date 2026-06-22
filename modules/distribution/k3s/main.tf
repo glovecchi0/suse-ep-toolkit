@@ -1,25 +1,41 @@
 locals {
   install_type = var.node_role
-  base_config  = <<-EOF
-token: ${var.rke2_token}
+  disable_config = length(var.disable_components) > 0 ? join("\n", [
+    for component in var.disable_components :
+    "disable:\n  - ${component}"
+  ]) : ""
+  base_config = <<-EOF
+token: ${var.k3s_token}
 write-kubeconfig-mode: "0644"
-ingress-controller: ${var.rke2_ingress}
 EOF
-  join_config  = var.server_url != null ? "server: ${var.server_url}" : ""
+  join_config = (
+    var.server_url != null && var.node_role == "server"
+    ? "server: ${var.server_url}"
+    : ""
+  )
   final_config = trimspace(
     join("\n", compact([
       local.base_config,
       local.join_config,
-      var.rke2_config
+      local.disable_config,
+      var.k3s_config
     ]))
   )
 }
 
 locals {
-  user_data = <<-EOF
+  install_exec = (
+    var.node_role == "server" && var.server_url == null
+    ? "server --cluster-init"
+    : var.node_role == "server" && var.server_url != null
+    ? "server --server ${var.server_url}"
+    : "agent"
+  )
+  service_name = local.install_exec == "agent" ? "k3s-agent" : "k3s"
+  user_data    = <<-EOF
 #cloud-config
 write_files:
-  - path: /etc/rancher/rke2/config.yaml
+  - path: /etc/rancher/k3s/config.yaml
     permissions: "0600"
     content: |
       ${replace(local.final_config, "\n", "\n      ")}
@@ -34,7 +50,6 @@ runcmd:
         echo "Waiting for /dev/sda..."
         sleep 2
       done
-  # Ensure udev has settled
   - udevadm settle
   # Partition disk
   - |
@@ -44,7 +59,6 @@ runcmd:
         parted /dev/sda --script mkpart primary xfs 0% 100%
         mkfs.xfs -f /dev/sda1
       fi
-  # Mount rancher storage
   - mkdir -p /var/lib/rancher
   - |
       UUID=$(blkid -s UUID -o value /dev/sda1)
@@ -52,25 +66,23 @@ runcmd:
       echo "UUID=$UUID /var/lib/rancher xfs defaults,noatime,nodiratime,nofail,x-systemd.device-timeout=30 0 2" >> /etc/fstab
   - systemctl daemon-reload
   - mount /var/lib/rancher
-  # Verify mount
   - df -h /var/lib/rancher
-  # Install RKE2
-  - curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=${var.rke2_version} INSTALL_RKE2_TYPE=${local.install_type} sh -
-  - systemctl enable rke2-${local.install_type}
-  - systemctl start rke2-${local.install_type}
-  # Wait for kubeconfig to exist
+  - |
+      curl -sfL https://get.k3s.io | \
+      INSTALL_K3S_VERSION=${var.k3s_version} \
+      INSTALL_K3S_EXEC="${local.install_exec}" \
+      sh -
   - |
       for i in $(seq 1 60); do
-        if [ -f /etc/rancher/rke2/rke2.yaml ]; then
+        if [ -f /etc/rancher/k3s/k3s.yaml ]; then
           break
         fi
         sleep 2
       done
-  # Wait for Kubernetes API to respond
   - |
       for i in $(seq 1 90); do
-        /var/lib/rancher/rke2/bin/kubectl \
-          --kubeconfig /etc/rancher/rke2/rke2.yaml \
+        k3s kubectl \
+          --kubeconfig /etc/rancher/k3s/k3s.yaml \
           get nodes >/dev/null 2>&1 && break
         sleep 2
       done
