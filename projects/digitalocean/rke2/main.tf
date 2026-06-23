@@ -8,6 +8,7 @@ locals {
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
   ssh_username                      = "opensuse"
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
+  volume_device                     = "/dev/sda"
   instance_type                     = var.instance_type
   rke2_token                        = random_string.rke2_token.result
   first_server_url                  = "https://${module.rke2_first_server.instances_public_ip[0]}:9345"
@@ -40,6 +41,7 @@ module "rke2_first" {
   rke2_token   = local.rke2_token
   rke2_version = var.rke2_version
   rke2_ingress = var.rke2_ingress
+  volume_device = local.volume_device
 }
 
 module "rke2_first_server" {
@@ -61,6 +63,7 @@ module "rke2_additional_servers" {
   rke2_version = var.rke2_version
   rke2_ingress = var.rke2_ingress
   server_url   = local.first_server_url
+  volume_device = local.volume_device
 }
 
 module "rke2_servers" {
@@ -83,6 +86,7 @@ module "rke2_additional_workers" {
   rke2_version = var.rke2_version
   rke2_ingress = var.rke2_ingress
   server_url   = local.first_server_url
+  volume_device = local.volume_device
 }
 
 module "rke2_workers" {

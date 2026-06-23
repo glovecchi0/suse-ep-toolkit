@@ -17,7 +17,7 @@ All components are deployed automatically using reusable modules from the reposi
 - Edit `./terraform.tfvars`
 - Configure the required variables:
   - `prefix` to give the resources an identifiable name (e.g., your initials or first name)
-    - Make sure you are logged into your AWS account from your local Terminal. See the preparatory steps [here](../../modules/infrastructure/aws/README.md).
+- Make sure you are logged into your AWS account from your local Terminal. See the preparatory steps [here](../../../modules/infrastructure/aws/README.md).
 
 Example:
 

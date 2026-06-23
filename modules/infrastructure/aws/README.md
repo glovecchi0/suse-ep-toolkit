@@ -1,4 +1,4 @@
-# Terraform | Amazong Web Services - Preparatory steps
+# Terraform | Amazon Web Services - Preparatory steps
 
 In order for Terraform to run operations on your behalf, you must [install and configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
