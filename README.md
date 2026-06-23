@@ -24,6 +24,7 @@ The toolkit focuses on:
 ### Kubernetes Distribution
 
 - RKE2
+- K3s
 
 ### SUSE Products
 
@@ -50,6 +51,7 @@ The toolkit focuses on:
 │   │   ├── neuvector/
 │   │   ├── rancher/
 │   │   ├── rke2/
+│   │   ├── k3s/
 │   │   └── suse-observability/
 │   ├── identity/
 │   │   └── ssh/
@@ -57,7 +59,8 @@ The toolkit focuses on:
 │       └── digitalocean/
 ├── projects/
 │   └── digitalocean/
-│       └── rke2/
+│       ├── rke2/
+│       └── k3s/
 └── README.md
 ```
 
@@ -75,6 +78,7 @@ The `projects/` directory combines multiple modules together to provide ready-to
 ### Distribution modules
 
 - `rke2`
+- `k3s`
 - `rancher`
 - `longhorn`
 - `neuvector`
@@ -102,11 +106,12 @@ Each module contains its own `docs.md` file with:
 ### DigitalOcean
 
 - `projects/digitalocean/rke2`
+- `projects/digitalocean/k3s`
 
 This project can deploy:
 
-- Single-node RKE2 clusters
-- Multi-node HA RKE2 clusters
+- Single-node RKE2/K3s clusters
+- Multi-node HA RKE2/K3s clusters
 - Longhorn storage
 - Rancher
 - NeuVector
@@ -118,7 +123,7 @@ using DigitalOcean Droplets.
 
 - Modular architecture
 - Terraform and OpenTofu compatible
-- Multi-node RKE2 support
+- Multi-node RKE2/K3s support
 - Automatic TLS generation
 - Traefik ingress integration
 - Longhorn persistent storage
