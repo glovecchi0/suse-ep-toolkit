@@ -1,5 +1,5 @@
 locals {
-  letters              = ["b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t"]
+  letters          = ["b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t"]
   instance_os_type = "opensuse"
   ssh_username     = local.instance_os_type
   common_tags = {
@@ -7,8 +7,8 @@ locals {
     Workload   = "harvester"
     Managed_by = "terraform"
   }
-  available_azs        = data.aws_ec2_instance_type_offerings.available.locations
-  selected_az          = length(local.available_azs) > 0 ? local.available_azs[0] : null
+  available_azs = data.aws_ec2_instance_type_offerings.available.locations
+  selected_az   = length(local.available_azs) > 0 ? local.available_azs[0] : null
 }
 
 resource "random_id" "volume_suffix" {
@@ -25,7 +25,7 @@ resource "aws_vpc" "vpc" {
 }
 
 resource "aws_subnet" "public" {
-    count                = var.create_network_resources ? 1 : 0
+  count                   = var.create_network_resources ? 1 : 0
   vpc_id                  = aws_vpc.vpc[0].id
   cidr_block              = "${var.ip_cidr_range}/25"
   map_public_ip_on_launch = true
@@ -99,6 +99,13 @@ resource "aws_security_group" "sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    description = "Allow inbound HTTP access restricted to CIDR list"
+    from_port   = "9345"
+    to_port     = "9345"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   egress {
     description = "Allow public HTTPS inbound access to nodes"
     from_port   = "0"
@@ -136,20 +143,6 @@ resource "aws_instance" "vm" {
   }
   instance_market_options {
     market_type = var.spot_instance ? "spot" : null
-  }
-  provisioner "remote-exec" {
-    inline = flatten([
-      "echo 'Waiting for cloud-init to complete...'",
-      "cloud-init status --wait > /dev/null",
-      "echo 'Completed cloud-init!'"
-    ])
-
-    connection {
-      type        = "ssh"
-      host        = aws_eip.static_ip.public_ip
-      user        = local.ssh_username
-      private_key = var.ssh_key_content
-    }
   }
 }
 

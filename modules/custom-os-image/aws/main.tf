@@ -122,3 +122,14 @@ resource "aws_ami" "opensuse_ami" {
   }
   tags = local.common_tags
 }
+
+resource "null_resource" "removing_image" {
+  depends_on = [aws_ami.opensuse_ami]
+  provisioner "local-exec" {
+    command = <<-EOT
+      set -e
+      FILE="${path.cwd}/${local.certified_image_name}"
+      rm -f "$FILE"
+    EOT
+  }
+}

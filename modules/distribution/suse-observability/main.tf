@@ -42,6 +42,7 @@ resource "helm_release" "suse_observability" {
   chart            = "suse-observability"
   namespace        = "suse-observability"
   create_namespace = true
+  timeout          = 1200
   version          = var.suse_observability_hc_version
   values = [
     templatefile("${path.module}/suse-observability-values.yaml.tpl", {

@@ -8,6 +8,7 @@ locals {
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
   ssh_username                      = "opensuse"
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
+  volume_device                     = "/dev/nvme1n1"
   instance_type                     = var.instance_type
   rke2_token                        = random_string.rke2_token.result
   first_server_url                  = "https://${module.rke2_first_server.instances_public_ip}:9345"
@@ -34,77 +35,80 @@ module "os_image" {
 }
 
 module "rke2_first" {
-  source       = "../../../modules/distribution/rke2"
-  node_role    = "server"
-  rke2_token   = local.rke2_token
-  rke2_version = var.rke2_version
-  rke2_ingress = var.rke2_ingress
+  source        = "../../../modules/distribution/rke2"
+  node_role     = "server"
+  rke2_token    = local.rke2_token
+  rke2_version  = var.rke2_version
+  rke2_ingress  = var.rke2_ingress
+  volume_device = local.volume_device
 }
 
 module "rke2_first_server" {
-  source         = "../../../modules/infrastructure/aws/ec2"
-  prefix         = "${var.prefix}-server-1"
-  region         = var.region
-  ssh_key_name   = module.identity.ssh_key_name
-  ssh_key_content = data.local_file.ssh_private_key.content
-  instance_type  = local.instance_type
-  data_disk_size = var.data_disk_size
-  ami_id       = module.os_image.image_id
-  instance_count = 1
+  source                   = "../../../modules/infrastructure/aws/ec2"
+  prefix                   = "${var.prefix}-server-1"
+  region                   = var.region
+  ssh_key_name             = module.identity.ssh_key_name
+  ssh_key_content          = data.local_file.ssh_private_key.content
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
+  ami_id                   = module.os_image.image_id
+  instance_count           = 1
   create_network_resources = true
-  user_data      = module.rke2_first.user_data
+  user_data                = module.rke2_first.user_data
 }
 
 module "rke2_additional_servers" {
-  source       = "../../../modules/distribution/rke2"
-  node_role    = "server"
-  rke2_token   = local.rke2_token
-  rke2_version = var.rke2_version
-  rke2_ingress = var.rke2_ingress
-  server_url   = local.first_server_url
+  source        = "../../../modules/distribution/rke2"
+  node_role     = "server"
+  rke2_token    = local.rke2_token
+  rke2_version  = var.rke2_version
+  rke2_ingress  = var.rke2_ingress
+  volume_device = local.volume_device
+  server_url    = local.first_server_url
 }
 
 module "rke2_servers" {
-  for_each       = toset(local.server_nodes)
-  source         = "../../../modules/infrastructure/aws/ec2"
-  prefix         = "${var.prefix}-server-${each.value}"
-  region         = var.region
-  ssh_key_name   = module.identity.ssh_key_name
-  ssh_key_content = data.local_file.ssh_private_key.content
-  instance_type  = local.instance_type
-  data_disk_size = var.data_disk_size
-  ami_id       = module.os_image.image_id
-  instance_count = 1
+  for_each                 = toset(local.server_nodes)
+  source                   = "../../../modules/infrastructure/aws/ec2"
+  prefix                   = "${var.prefix}-server-${each.value}"
+  region                   = var.region
+  ssh_key_name             = module.identity.ssh_key_name
+  ssh_key_content          = data.local_file.ssh_private_key.content
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
+  ami_id                   = module.os_image.image_id
+  instance_count           = 1
   create_network_resources = false
-  security_group_id = module.rke2_first_server.aws_security_group
-  subnet_id         = module.rke2_first_server.aws_subnet
-  user_data      = module.rke2_additional_servers.user_data
+  security_group_id        = module.rke2_first_server.aws_security_group
+  subnet_id                = module.rke2_first_server.aws_subnet
+  user_data                = module.rke2_additional_servers.user_data
 }
 
 module "rke2_additional_workers" {
-  source       = "../../../modules/distribution/rke2"
-  node_role    = "agent"
-  rke2_token   = local.rke2_token
-  rke2_version = var.rke2_version
-  rke2_ingress = var.rke2_ingress
-  server_url   = local.first_server_url
+  source        = "../../../modules/distribution/rke2"
+  node_role     = "agent"
+  rke2_token    = local.rke2_token
+  rke2_version  = var.rke2_version
+  rke2_ingress  = var.rke2_ingress
+  volume_device = local.volume_device
+  server_url    = local.first_server_url
 }
 
 module "rke2_workers" {
-  for_each       = toset(local.worker_nodes)
-  source         = "../../../modules/infrastructure/aws/ec2"
-  prefix         = "${var.prefix}-worker-${each.value}"
-  region         = var.region
-  ssh_key_name    = module.identity.ssh_key_name
-  ssh_key_content = data.local_file.ssh_private_key.content
-  instance_type  = local.instance_type
-  data_disk_size = var.data_disk_size
-  ami_id       = module.os_image.image_id
-  instance_count = 1
+  for_each                 = toset(local.worker_nodes)
+  source                   = "../../../modules/infrastructure/aws/ec2"
+  prefix                   = "${var.prefix}-worker-${each.value}"
+  region                   = var.region
+  ssh_key_name             = module.identity.ssh_key_name
+  ssh_key_content          = data.local_file.ssh_private_key.content
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
+  ami_id                   = module.os_image.image_id
+  instance_count           = 1
   create_network_resources = false
-  security_group_id = module.rke2_first_server.aws_security_group
-  subnet_id         = module.rke2_first_server.aws_subnet
-  user_data      = module.rke2_additional_workers.user_data
+  security_group_id        = module.rke2_first_server.aws_security_group
+  subnet_id                = module.rke2_first_server.aws_subnet
+  user_data                = module.rke2_additional_workers.user_data
 }
 
 data "local_file" "ssh_private_key" {
@@ -120,7 +124,7 @@ resource "ssh_resource" "retrieve_kubeconfig" {
   host = module.rke2_first_server.instances_public_ip
   commands = [
     "timeout=600; while [ ! -f /etc/rancher/rke2/rke2.yaml ]; do sleep 5; done",
-    "sudo cat /etc/rancher/rke2/rke2.yaml | sed 's/127.0.0.1/${module.rke2_first_server.instances_public_ip}/g'"
+    "sudo cat /etc/rancher/rke2/rke2.yaml | sed -e 's/127.0.0.1/${module.rke2_first_server.instances_public_ip}/g' -e '/certificate-authority-data:/c\\    insecure-skip-tls-verify: true'"
   ]
   user        = local.ssh_username
   private_key = data.local_file.ssh_private_key.content

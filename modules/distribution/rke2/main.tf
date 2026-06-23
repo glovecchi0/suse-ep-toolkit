@@ -1,5 +1,7 @@
 locals {
   install_type = var.node_role
+  disk_device  = var.volume_device
+  disk_part    = length(regexall("nvme", var.volume_device)) > 0 ? "${var.volume_device}p1" : "${var.volume_device}1"
   base_config  = <<-EOF
 token: ${var.rke2_token}
 write-kubeconfig-mode: "0644"
@@ -27,11 +29,11 @@ runcmd:
   # Wait volume attachment
   - |
       for i in $(seq 1 60); do
-        if [ -b /dev/sda ]; then
-          echo "Disk /dev/sda found"
+        if [ -b ${local.disk_device} ]; then
+          echo "Disk ${local.disk_device} found"
           break
         fi
-        echo "Waiting for /dev/sda..."
+        echo "Waiting for ${local.disk_device}..."
         sleep 2
       done
   # Ensure udev has settled
@@ -40,14 +42,14 @@ runcmd:
   - |
       if ! blkid /dev/sda1; then
         echo "Partitioning disk..."
-        parted /dev/sda --script mklabel gpt
-        parted /dev/sda --script mkpart primary xfs 0% 100%
-        mkfs.xfs -f /dev/sda1
+        parted ${local.disk_device} --script mklabel gpt
+        parted ${local.disk_device} --script mkpart primary xfs 0% 100%
+        mkfs.xfs -f ${local.disk_part}
       fi
   # Mount rancher storage
   - mkdir -p /var/lib/rancher
   - |
-      UUID=$(blkid -s UUID -o value /dev/sda1)
+      UUID=$(blkid -s UUID -o value ${local.disk_part})
       grep -q "$UUID" /etc/fstab || \
       echo "UUID=$UUID /var/lib/rancher xfs defaults,noatime,nodiratime,nofail,x-systemd.device-timeout=30 0 2" >> /etc/fstab
   - systemctl daemon-reload

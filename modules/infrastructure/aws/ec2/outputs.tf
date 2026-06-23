@@ -9,11 +9,11 @@ output "instances_public_ip" {
 }
 
 output "aws_security_group" {
-  value = var.create_network_resources ? aws_security_group.sg[0].id : null
+  value       = var.create_network_resources ? aws_security_group.sg[0].id : null
   description = "AWS Security group"
 }
 
 output "aws_subnet" {
-  value = var.create_network_resources ? aws_subnet.public[0].id : null
+  value       = var.create_network_resources ? aws_subnet.public[0].id : null
   description = "AWS subnet"
 }

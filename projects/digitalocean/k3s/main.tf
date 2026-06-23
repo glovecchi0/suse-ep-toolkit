@@ -24,7 +24,7 @@ locals {
 }
 
 module "identity" {
-  source = "../../../modules/identity/ssh"
+  source = "../../../modules/identity/ssh/digitalocean"
   prefix = var.prefix
 }
 

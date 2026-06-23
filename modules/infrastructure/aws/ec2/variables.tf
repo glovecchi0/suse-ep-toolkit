@@ -15,6 +15,10 @@ variable "region" {
       "eu-west-1",
       "eu-west-2",
       "eu-west-3",
+      "eu-north-1",
+      "eu-south-1",
+      "eu-south-2",
+      "eu-central-2",
       "ap-northeast-2",
       "ap-northeast-1",
       "ca-central-1",
@@ -38,8 +42,8 @@ variable "ssh_key_name" {
 
 variable "ssh_key_content" {
   description = "SSH Key content to access EC2 instances through SSH"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "instance_count" {
@@ -98,12 +102,12 @@ variable "create_network_resources" {
 
 variable "subnet_id" {
   description = "Specifies the subnet created during first node creation"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "security_group_id" {
   description = "Specifies the security group created during first node creation"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
