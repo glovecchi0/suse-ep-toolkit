@@ -53,6 +53,7 @@ module "rke2_first_server" {
   data_disk_size           = var.data_disk_size
   ami_id                   = module.os_image.image_id
   instance_count           = 1
+  spot_instance            = var.spot_instance
   create_network_resources = true
   user_data                = module.rke2_first.user_data
 }
@@ -78,6 +79,7 @@ module "rke2_servers" {
   data_disk_size           = var.data_disk_size
   ami_id                   = module.os_image.image_id
   instance_count           = 1
+  spot_instance            = var.spot_instance
   create_network_resources = false
   security_group_id        = module.rke2_first_server.aws_security_group
   subnet_id                = module.rke2_first_server.aws_subnet
@@ -105,6 +107,7 @@ module "rke2_workers" {
   data_disk_size           = var.data_disk_size
   ami_id                   = module.os_image.image_id
   instance_count           = 1
+  spot_instance            = var.spot_instance
   create_network_resources = false
   security_group_id        = module.rke2_first_server.aws_security_group
   subnet_id                = module.rke2_first_server.aws_subnet

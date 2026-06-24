@@ -1,6 +1,6 @@
-# AWS EC2 k3s Project
+# AWS EC2 K3s Project
 
-This project deploys an k3s Kubernetes cluster on AWS using Terraform/OpenTofu.
+This project deploys a K3s Kubernetes cluster on AWS using Terraform/OpenTofu.
 
 The deployment can optionally install and configure:
 
@@ -110,14 +110,14 @@ neuvector_admin_password = "************"
 
 # Example deployment scenarios
 
-## Minimal single-node k3s cluster
+## Minimal single-node K3s cluster
 
 ```hcl
 prefix         = "<PREFIX>"
 instance_count = 1
 ```
 
-## HA k3s cluster with Longhorn
+## HA K3s cluster with Longhorn
 
 ```hcl
 prefix                  = "<PREFIX>"
@@ -127,7 +127,7 @@ longhorn_enabled        = true
 longhorn_admin_password = "************"
 ```
 
-## HA k3s cluster with Rancher
+## HA K3s cluster with Rancher
 
 ```hcl
 prefix                     = "<PREFIX>"
@@ -191,7 +191,7 @@ tofu destroy -auto-approve
 After deployment:
 
 ```bash
-export KUBECONFIG=<PREFIX>_kube_config.yaml
+export KUBECONFIG=<PREFIX>_kubeconfig.yaml
 ```
 
 # How to access cluster nodes
@@ -223,4 +223,4 @@ Depending on enabled components, the following services become available:
 - SUSE Observability supports Rancher OIDC authentication, which can be enabled by setting `suse_observability_rancher_auth = true`
 - When SUSE Observability is enabled, dedicated Ingress resources for OTLP/gRPC and OTLP/HTTP are automatically created to expose the OpenTelemetry Collector
 - `sslip.io` is used by default for automatic DNS resolution
-- Multi-node deployments automatically configure HA k3s server nodes
+- Multi-node deployments automatically configure HA K3s server nodes

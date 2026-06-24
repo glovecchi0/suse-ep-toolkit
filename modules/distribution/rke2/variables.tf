@@ -47,7 +47,7 @@ variable "rke2_ingress" {
 }
 
 variable "volume_device" {
-  description = "Specifies the volume device mounted on the cloud instance. Default is /dev/sda/"
+  description = "Specifies the volume device mounted on the cloud instance. Default is '/dev/sda/'."
   type        = string
   default     = "/dev/sda"
 }

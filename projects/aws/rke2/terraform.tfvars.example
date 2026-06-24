@@ -7,6 +7,9 @@ region = "us-east-1"
 ## -- Specifies the number of EC2 instances (nodes) to create for the RKE2 cluster.
 instance_count = 1
 
+## -- Specifies whether the instances should be Spot (preemptible) VMs.
+spot_instance = true
+
 ## -- Specifies the name of the EC2 instance type.
 instance_type = "m8i.4xlarge"
 

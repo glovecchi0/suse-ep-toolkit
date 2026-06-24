@@ -1,5 +1,5 @@
 variable "prefix" {
-  description = "Specifies the prefix added to the names of all resources. Default is 'do-tf'."
+  description = "Specifies the prefix added to the names of all resources. Default is 'aws-tf'."
   type        = string
   default     = "aws-tf"
 }
@@ -36,12 +36,13 @@ variable "region" {
 }
 
 variable "ssh_key_name" {
-  type    = string
-  default = null
+  description = "Specifies the name of the AWS EC2 Key Pair used to access the instances through SSH. Default is 'null'."
+  type        = string
+  default     = null
 }
 
 variable "ssh_key_content" {
-  description = "SSH Key content to access EC2 instances through SSH"
+  description = "Specifies the public SSH key content used to create the AWS EC2 Key Pair. Default is 'null'."
   type        = string
   default     = null
 }
@@ -95,19 +96,19 @@ variable "ip_cidr_range" {
 }
 
 variable "create_network_resources" {
+  description = "Specifies whether to create the VPC networking resources (security group and related resources). Default is 'false'."
   type        = bool
-  description = "Create the security group attached to the instance(s)"
   default     = false
 }
 
 variable "subnet_id" {
-  description = "Specifies the subnet created during first node creation"
+  description = "Specifies the ID of an existing AWS subnet where the EC2 instances will be deployed. Default is 'null'."
   type        = string
   default     = null
 }
 
 variable "security_group_id" {
-  description = "Specifies the security group created during first node creation"
+  description = "Specifies the ID of an existing AWS security group to associate with the EC2 instances. Default is 'null'."
   type        = string
   default     = null
 }

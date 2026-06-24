@@ -52,6 +52,7 @@ module "k3s_first_server" {
   data_disk_size           = var.data_disk_size
   ami_id                   = module.os_image.image_id
   instance_count           = 1
+  spot_instance            = var.spot_instance
   create_network_resources = true
   user_data                = module.k3s_first.user_data
 }
@@ -76,6 +77,7 @@ module "k3s_servers" {
   data_disk_size           = var.data_disk_size
   ami_id                   = module.os_image.image_id
   instance_count           = 1
+  spot_instance            = var.spot_instance
   create_network_resources = false
   security_group_id        = module.k3s_first_server.aws_security_group
   subnet_id                = module.k3s_first_server.aws_subnet
@@ -102,6 +104,7 @@ module "k3s_workers" {
   data_disk_size           = var.data_disk_size
   ami_id                   = module.os_image.image_id
   instance_count           = 1
+  spot_instance            = var.spot_instance
   create_network_resources = false
   security_group_id        = module.k3s_first_server.aws_security_group
   subnet_id                = module.k3s_first_server.aws_subnet

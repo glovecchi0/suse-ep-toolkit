@@ -21,7 +21,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh | n/a |
+| <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh/digitalocean | n/a |
 | <a name="module_k3s_additional_servers"></a> [k3s\_additional\_servers](#module\_k3s\_additional\_servers) | ../../../modules/distribution/k3s | n/a |
 | <a name="module_k3s_additional_workers"></a> [k3s\_additional\_workers](#module\_k3s\_additional\_workers) | ../../../modules/distribution/k3s | n/a |
 | <a name="module_k3s_first"></a> [k3s\_first](#module\_k3s\_first) | ../../../modules/distribution/k3s | n/a |

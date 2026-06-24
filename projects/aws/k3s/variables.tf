@@ -45,6 +45,12 @@ variable "instance_count" {
   }
 }
 
+variable "spot_instance" {
+  description = "Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'."
+  type        = bool
+  default     = true
+}
+
 variable "instance_type" {
   description = "Specifies the name of the AWS EC2 instance type. Default is 'm8i.4xlarge'."
   type        = string

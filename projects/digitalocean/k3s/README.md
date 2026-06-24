@@ -1,6 +1,6 @@
 # DigitalOcean K3s Project
 
-This project deploys an K3s Kubernetes cluster on DigitalOcean using Terraform/OpenTofu.
+This project deploys a K3s Kubernetes cluster on DigitalOcean using Terraform/OpenTofu.
 
 The deployment can optionally install and configure:
 
@@ -123,7 +123,6 @@ instance_count = 1
 ```hcl
 prefix                  = "<PREFIX>"
 do_token                = "<DIGITALOCEAN_TOKEN>"
-
 instance_count          = 3
 
 longhorn_enabled        = true
@@ -135,7 +134,6 @@ longhorn_admin_password = "************"
 ```hcl
 prefix                     = "<PREFIX>"
 do_token                   = "<DIGITALOCEAN_TOKEN>"
-
 instance_count             = 3
 
 longhorn_enabled           = true
@@ -150,7 +148,6 @@ rancher_bootstrap_password = "************"
 ```hcl
 prefix                          = "<PREFIX>"
 do_token                        = "<DIGITALOCEAN_TOKEN>"
-
 instance_count                  = 3
 
 longhorn_enabled                = true
@@ -198,7 +195,7 @@ tofu destroy -auto-approve
 After deployment:
 
 ```bash
-export KUBECONFIG=<PREFIX>_kube_config.yaml
+export KUBECONFIG=<PREFIX>_kubeconfig.yaml
 ```
 
 # How to access cluster nodes

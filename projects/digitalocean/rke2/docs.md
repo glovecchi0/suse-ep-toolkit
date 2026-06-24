@@ -21,7 +21,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh | n/a |
+| <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh/digitalocean | n/a |
 | <a name="module_longhorn"></a> [longhorn](#module\_longhorn) | ../../../modules/distribution/longhorn | n/a |
 | <a name="module_neuvector"></a> [neuvector](#module\_neuvector) | ../../../modules/distribution/neuvector | n/a |
 | <a name="module_os_image"></a> [os\_image](#module\_os\_image) | ../../../modules/custom-os-image/digitalocean | n/a |
