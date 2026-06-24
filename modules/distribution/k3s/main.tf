@@ -1,18 +1,17 @@
 locals {
-  install_type = var.node_role
-  disable_config = length(var.disable_components) > 0 ? join("\n", [
-    for component in var.disable_components :
-    "disable:\n  - ${component}"
-  ]) : ""
-  base_config = <<-EOF
+  install_type   = var.node_role
+  disk_device    = var.volume_device
+  disk_part      = length(regexall("nvme", var.volume_device)) > 0 ? "${var.volume_device}p1" : "${var.volume_device}1"
+  disable_config = length(var.disable_components) > 0 ? "disable:\n${join("\n", [for component in var.disable_components : "  - ${component}"])}" : ""
+  base_config = (var.node_role == "server" ? <<-EOF
 token: ${var.k3s_token}
 write-kubeconfig-mode: "0644"
 EOF
-  join_config = (
-    var.server_url != null && var.node_role == "server"
-    ? "server: ${var.server_url}"
-    : ""
+    : <<-EOF
+token: ${var.k3s_token}
+EOF
   )
+  join_config = var.server_url != null ? "server: ${var.server_url}" : ""
   final_config = trimspace(
     join("\n", compact([
       local.base_config,
@@ -25,13 +24,15 @@ EOF
 
 locals {
   install_exec = (
-    var.node_role == "server" && var.server_url == null
-    ? "server --cluster-init"
-    : var.node_role == "server" && var.server_url != null
-    ? "server --server ${var.server_url}"
+    var.node_role == "server"
+    ? (
+      var.server_url == null
+      ? "server --cluster-init"
+      : "server"
+    )
     : "agent"
   )
-  service_name = local.install_exec == "agent" ? "k3s-agent" : "k3s"
+  service_name = var.node_role == "server" ? "k3s" : "k3s-agent"
   user_data    = <<-EOF
 #cloud-config
 write_files:
@@ -43,35 +44,44 @@ runcmd:
   # Wait volume attachment
   - |
       for i in $(seq 1 60); do
-        if [ -b /dev/sda ]; then
-          echo "Disk /dev/sda found"
+        if [ -b ${local.disk_device} ]; then
+          echo "Disk ${local.disk_device} found"
           break
         fi
-        echo "Waiting for /dev/sda..."
+        echo "Waiting for ${local.disk_device}..."
         sleep 2
       done
+  # Ensure udev has settled
   - udevadm settle
   # Partition disk
   - |
-      if ! blkid /dev/sda1; then
+      if ! blkid ${local.disk_part}; then
         echo "Partitioning disk..."
-        parted /dev/sda --script mklabel gpt
-        parted /dev/sda --script mkpart primary xfs 0% 100%
-        mkfs.xfs -f /dev/sda1
+        parted ${local.disk_device} --script mklabel gpt
+        parted ${local.disk_device} --script mkpart primary xfs 0% 100%
+        mkfs.xfs -f ${local.disk_part}
       fi
+  # Mount rancher storage
   - mkdir -p /var/lib/rancher
   - |
-      UUID=$(blkid -s UUID -o value /dev/sda1)
+      UUID=$(blkid -s UUID -o value ${local.disk_part})
       grep -q "$UUID" /etc/fstab || \
       echo "UUID=$UUID /var/lib/rancher xfs defaults,noatime,nodiratime,nofail,x-systemd.device-timeout=30 0 2" >> /etc/fstab
   - systemctl daemon-reload
   - mount /var/lib/rancher
+  # Verify mount
   - df -h /var/lib/rancher
+  # Install K3s
   - |
       curl -sfL https://get.k3s.io | \
       INSTALL_K3S_VERSION=${var.k3s_version} \
       INSTALL_K3S_EXEC="${local.install_exec}" \
       sh -
+  # Enable and start service
+  - systemctl enable ${local.service_name}
+  - systemctl restart ${local.service_name}
+%{if var.node_role == "server"~}
+  # Wait for kubeconfig
   - |
       for i in $(seq 1 60); do
         if [ -f /etc/rancher/k3s/k3s.yaml ]; then
@@ -79,6 +89,7 @@ runcmd:
         fi
         sleep 2
       done
+  # Wait for Kubernetes API
   - |
       for i in $(seq 1 90); do
         k3s kubectl \
@@ -86,5 +97,6 @@ runcmd:
           get nodes >/dev/null 2>&1 && break
         sleep 2
       done
+%{endif~}
 EOF
 }

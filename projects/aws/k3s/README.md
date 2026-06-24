@@ -1,6 +1,6 @@
-# DigitalOcean K3s Project
+# AWS EC2 K3s Project
 
-This project deploys a K3s Kubernetes cluster on DigitalOcean using Terraform/OpenTofu.
+This project deploys a K3s Kubernetes cluster on AWS using Terraform/OpenTofu.
 
 The deployment can optionally install and configure:
 
@@ -17,7 +17,7 @@ All components are deployed automatically using reusable modules from the reposi
 - Edit `./terraform.tfvars`
 - Configure the required variables:
   - `prefix` to give the resources an identifiable name (e.g., your initials or first name)
-  - `do_token` to specify the DigitalOcean API token used to create resources
+- Make sure you are logged into your AWS account from your local Terminal. See the preparatory steps [here](../../../modules/infrastructure/aws/README.md).
 
 Example:
 
@@ -114,7 +114,6 @@ neuvector_admin_password = "************"
 
 ```hcl
 prefix         = "<PREFIX>"
-do_token       = "<DIGITALOCEAN_TOKEN>"
 instance_count = 1
 ```
 
@@ -122,7 +121,6 @@ instance_count = 1
 
 ```hcl
 prefix                  = "<PREFIX>"
-do_token                = "<DIGITALOCEAN_TOKEN>"
 instance_count          = 3
 
 longhorn_enabled        = true
@@ -133,7 +131,6 @@ longhorn_admin_password = "************"
 
 ```hcl
 prefix                     = "<PREFIX>"
-do_token                   = "<DIGITALOCEAN_TOKEN>"
 instance_count             = 3
 
 longhorn_enabled           = true
@@ -147,7 +144,6 @@ rancher_bootstrap_password = "************"
 
 ```hcl
 prefix                          = "<PREFIX>"
-do_token                        = "<DIGITALOCEAN_TOKEN>"
 instance_count                  = 3
 
 longhorn_enabled                = true

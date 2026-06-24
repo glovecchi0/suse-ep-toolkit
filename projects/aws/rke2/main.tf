@@ -8,31 +8,30 @@ locals {
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
   ssh_username                      = "opensuse"
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
-  volume_device                     = "/dev/sda"
+  volume_device                     = "/dev/nvme1n1"
   instance_type                     = var.instance_type
   rke2_token                        = random_string.rke2_token.result
-  first_server_url                  = "https://${module.rke2_first_server.instances_public_ip[0]}:9345"
+  first_server_url                  = "https://${module.rke2_first_server.instances_public_ip}:9345"
   server_count                      = var.instance_count < 3 ? var.instance_count : 3
   server_nodes                      = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
   worker_count                      = var.instance_count > 3 ? var.instance_count - 3 : 0
   worker_nodes                      = [for i in range(1, local.worker_count + 1) : tostring(i)]
-  longhorn_host                     = "longhorn.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
-  rancher_host                      = "rancher.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
-  suse_observability_host           = "observability.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  longhorn_host                     = "longhorn.${module.rke2_first_server.instances_public_ip}.sslip.io"
+  rancher_host                      = "rancher.${module.rke2_first_server.instances_public_ip}.sslip.io"
+  suse_observability_host           = "observability.${module.rke2_first_server.instances_public_ip}.sslip.io"
   suse_observability_otlp_host      = "otlp-${local.suse_observability_host}"
   suse_observability_otlp_http_host = "otlp-http-${local.suse_observability_host}"
-  neuvector_host                    = "neuvector.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  neuvector_host                    = "neuvector.${module.rke2_first_server.instances_public_ip}.sslip.io"
 }
 
 module "identity" {
-  source = "../../../modules/identity/ssh/digitalocean"
+  source = "../../../modules/identity/ssh/aws"
   prefix = var.prefix
 }
 
 module "os_image" {
-  source = "../../../modules/custom-os-image/digitalocean"
+  source = "../../../modules/custom-os-image/aws"
   prefix = var.prefix
-  region = var.region
 }
 
 module "rke2_first" {
@@ -45,15 +44,18 @@ module "rke2_first" {
 }
 
 module "rke2_first_server" {
-  source         = "../../../modules/infrastructure/digitalocean/droplet"
-  prefix         = "${var.prefix}-server-1"
-  region         = var.region
-  ssh_key_id     = module.identity.ssh_key_id
-  instance_type  = local.instance_type
-  data_disk_size = var.data_disk_size
-  image_id       = module.os_image.image_id
-  instance_count = 1
-  user_data      = module.rke2_first.user_data
+  source                   = "../../../modules/infrastructure/aws/ec2"
+  prefix                   = "${var.prefix}-server-1"
+  region                   = var.region
+  ssh_key_name             = module.identity.ssh_key_name
+  ssh_key_content          = data.local_file.ssh_private_key.content
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
+  ami_id                   = module.os_image.image_id
+  instance_count           = 1
+  spot_instance            = var.spot_instance
+  create_network_resources = true
+  user_data                = module.rke2_first.user_data
 }
 
 module "rke2_additional_servers" {
@@ -62,21 +64,26 @@ module "rke2_additional_servers" {
   rke2_token    = local.rke2_token
   rke2_version  = var.rke2_version
   rke2_ingress  = var.rke2_ingress
-  server_url    = local.first_server_url
   volume_device = local.volume_device
+  server_url    = local.first_server_url
 }
 
 module "rke2_servers" {
-  for_each       = toset(local.server_nodes)
-  source         = "../../../modules/infrastructure/digitalocean/droplet"
-  prefix         = "${var.prefix}-server-${each.value}"
-  region         = var.region
-  ssh_key_id     = module.identity.ssh_key_id
-  instance_type  = local.instance_type
-  data_disk_size = var.data_disk_size
-  image_id       = module.os_image.image_id
-  instance_count = 1
-  user_data      = module.rke2_additional_servers.user_data
+  for_each                 = toset(local.server_nodes)
+  source                   = "../../../modules/infrastructure/aws/ec2"
+  prefix                   = "${var.prefix}-server-${each.value}"
+  region                   = var.region
+  ssh_key_name             = module.identity.ssh_key_name
+  ssh_key_content          = data.local_file.ssh_private_key.content
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
+  ami_id                   = module.os_image.image_id
+  instance_count           = 1
+  spot_instance            = var.spot_instance
+  create_network_resources = false
+  security_group_id        = module.rke2_first_server.aws_security_group
+  subnet_id                = module.rke2_first_server.aws_subnet
+  user_data                = module.rke2_additional_servers.user_data
 }
 
 module "rke2_additional_workers" {
@@ -85,25 +92,30 @@ module "rke2_additional_workers" {
   rke2_token    = local.rke2_token
   rke2_version  = var.rke2_version
   rke2_ingress  = var.rke2_ingress
-  server_url    = local.first_server_url
   volume_device = local.volume_device
+  server_url    = local.first_server_url
 }
 
 module "rke2_workers" {
-  for_each       = toset(local.worker_nodes)
-  source         = "../../../modules/infrastructure/digitalocean/droplet"
-  prefix         = "${var.prefix}-worker-${each.value}"
-  region         = var.region
-  ssh_key_id     = module.identity.ssh_key_id
-  instance_type  = local.instance_type
-  data_disk_size = var.data_disk_size
-  image_id       = module.os_image.image_id
-  instance_count = 1
-  user_data      = module.rke2_additional_workers.user_data
+  for_each                 = toset(local.worker_nodes)
+  source                   = "../../../modules/infrastructure/aws/ec2"
+  prefix                   = "${var.prefix}-worker-${each.value}"
+  region                   = var.region
+  ssh_key_name             = module.identity.ssh_key_name
+  ssh_key_content          = data.local_file.ssh_private_key.content
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
+  ami_id                   = module.os_image.image_id
+  instance_count           = 1
+  spot_instance            = var.spot_instance
+  create_network_resources = false
+  security_group_id        = module.rke2_first_server.aws_security_group
+  subnet_id                = module.rke2_first_server.aws_subnet
+  user_data                = module.rke2_additional_workers.user_data
 }
 
 data "local_file" "ssh_private_key" {
-  depends_on = [module.rke2_first_server]
+  depends_on = [module.identity]
   filename   = local.ssh_private_key_path
 }
 
@@ -112,10 +124,10 @@ resource "ssh_resource" "retrieve_kubeconfig" {
     module.rke2_servers,
     module.rke2_workers
   ]
-  host = module.rke2_first_server.instances_public_ip[0]
+  host = module.rke2_first_server.instances_public_ip
   commands = [
     "timeout=600; while [ ! -f /etc/rancher/rke2/rke2.yaml ]; do sleep 5; done",
-    "sudo cat /etc/rancher/rke2/rke2.yaml | sed 's/127.0.0.1/${module.rke2_first_server.instances_public_ip[0]}/g'"
+    "sudo cat /etc/rancher/rke2/rke2.yaml | sed -e 's/127.0.0.1/${module.rke2_first_server.instances_public_ip}/g' -e '/certificate-authority-data:/c\\    insecure-skip-tls-verify: true'"
   ]
   user        = local.ssh_username
   private_key = data.local_file.ssh_private_key.content
@@ -146,7 +158,7 @@ module "longhorn" {
   longhorn_host           = local.longhorn_host
   ssh_private_key         = data.local_file.ssh_private_key.content
   node_ips = concat(
-    [module.rke2_first_server.instances_public_ip[0]],
+    [module.rke2_first_server.instances_public_ip],
     flatten([for m in module.rke2_servers : m.instances_public_ip]),
     flatten([for m in module.rke2_workers : m.instances_public_ip])
   )

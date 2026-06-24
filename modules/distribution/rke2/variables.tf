@@ -45,3 +45,9 @@ variable "rke2_ingress" {
     error_message = "Invalid ingress controller. Allowed values are 'traefik', 'nginx', or 'none'."
   }
 }
+
+variable "volume_device" {
+  description = "Specifies the volume device mounted on the cloud instance. Default is '/dev/sda/'."
+  type        = string
+  default     = "/dev/sda"
+}

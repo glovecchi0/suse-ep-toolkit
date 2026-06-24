@@ -8,31 +8,30 @@ locals {
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
   ssh_username                      = "opensuse"
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
-  volume_device                     = "/dev/sda"
+  volume_device                     = "/dev/nvme1n1"
   instance_type                     = var.instance_type
   k3s_token                         = random_string.k3s_token.result
-  first_server_url                  = "https://${module.k3s_first_server.instances_public_ip[0]}:6443"
+  first_server_url                  = "https://${module.k3s_first_server.instances_public_ip}:6443"
   server_count                      = var.instance_count < 3 ? var.instance_count : 3
   server_nodes                      = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
   worker_count                      = var.instance_count > 3 ? var.instance_count - 3 : 0
   worker_nodes                      = [for i in range(1, local.worker_count + 1) : tostring(i)]
-  longhorn_host                     = "longhorn.${module.k3s_first_server.instances_public_ip[0]}.sslip.io"
-  rancher_host                      = "rancher.${module.k3s_first_server.instances_public_ip[0]}.sslip.io"
-  suse_observability_host           = "observability.${module.k3s_first_server.instances_public_ip[0]}.sslip.io"
+  longhorn_host                     = "longhorn.${module.k3s_first_server.instances_public_ip}.sslip.io"
+  rancher_host                      = "rancher.${module.k3s_first_server.instances_public_ip}.sslip.io"
+  suse_observability_host           = "observability.${module.k3s_first_server.instances_public_ip}.sslip.io"
   suse_observability_otlp_host      = "otlp-${local.suse_observability_host}"
   suse_observability_otlp_http_host = "otlp-http-${local.suse_observability_host}"
-  neuvector_host                    = "neuvector.${module.k3s_first_server.instances_public_ip[0]}.sslip.io"
+  neuvector_host                    = "neuvector.${module.k3s_first_server.instances_public_ip}.sslip.io"
 }
 
 module "identity" {
-  source = "../../../modules/identity/ssh/digitalocean"
+  source = "../../../modules/identity/ssh/aws"
   prefix = var.prefix
 }
 
 module "os_image" {
-  source = "../../../modules/custom-os-image/digitalocean"
+  source = "../../../modules/custom-os-image/aws"
   prefix = var.prefix
-  region = var.region
 }
 
 module "k3s_first" {
@@ -44,15 +43,18 @@ module "k3s_first" {
 }
 
 module "k3s_first_server" {
-  source         = "../../../modules/infrastructure/digitalocean/droplet"
-  prefix         = "${var.prefix}-server-1"
-  region         = var.region
-  ssh_key_id     = module.identity.ssh_key_id
-  instance_type  = local.instance_type
-  data_disk_size = var.data_disk_size
-  image_id       = module.os_image.image_id
-  instance_count = 1
-  user_data      = module.k3s_first.user_data
+  source                   = "../../../modules/infrastructure/aws/ec2"
+  prefix                   = "${var.prefix}-server-1"
+  region                   = var.region
+  ssh_key_name             = module.identity.ssh_key_name
+  ssh_key_content          = data.local_file.ssh_private_key.content
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
+  ami_id                   = module.os_image.image_id
+  instance_count           = 1
+  spot_instance            = var.spot_instance
+  create_network_resources = true
+  user_data                = module.k3s_first.user_data
 }
 
 module "k3s_additional_servers" {
@@ -60,21 +62,26 @@ module "k3s_additional_servers" {
   node_role     = "server"
   k3s_token     = local.k3s_token
   k3s_version   = var.k3s_version
-  server_url    = local.first_server_url
   volume_device = local.volume_device
+  server_url    = local.first_server_url
 }
 
 module "k3s_servers" {
-  for_each       = toset(local.server_nodes)
-  source         = "../../../modules/infrastructure/digitalocean/droplet"
-  prefix         = "${var.prefix}-server-${each.value}"
-  region         = var.region
-  ssh_key_id     = module.identity.ssh_key_id
-  instance_type  = local.instance_type
-  data_disk_size = var.data_disk_size
-  image_id       = module.os_image.image_id
-  instance_count = 1
-  user_data      = module.k3s_additional_servers.user_data
+  for_each                 = toset(local.server_nodes)
+  source                   = "../../../modules/infrastructure/aws/ec2"
+  prefix                   = "${var.prefix}-server-${each.value}"
+  region                   = var.region
+  ssh_key_name             = module.identity.ssh_key_name
+  ssh_key_content          = data.local_file.ssh_private_key.content
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
+  ami_id                   = module.os_image.image_id
+  instance_count           = 1
+  spot_instance            = var.spot_instance
+  create_network_resources = false
+  security_group_id        = module.k3s_first_server.aws_security_group
+  subnet_id                = module.k3s_first_server.aws_subnet
+  user_data                = module.k3s_additional_servers.user_data
 }
 
 module "k3s_additional_workers" {
@@ -82,25 +89,30 @@ module "k3s_additional_workers" {
   node_role     = "agent"
   k3s_token     = local.k3s_token
   k3s_version   = var.k3s_version
-  server_url    = local.first_server_url
   volume_device = local.volume_device
+  server_url    = local.first_server_url
 }
 
 module "k3s_workers" {
-  for_each       = toset(local.worker_nodes)
-  source         = "../../../modules/infrastructure/digitalocean/droplet"
-  prefix         = "${var.prefix}-worker-${each.value}"
-  region         = var.region
-  ssh_key_id     = module.identity.ssh_key_id
-  instance_type  = local.instance_type
-  data_disk_size = var.data_disk_size
-  image_id       = module.os_image.image_id
-  instance_count = 1
-  user_data      = module.k3s_additional_workers.user_data
+  for_each                 = toset(local.worker_nodes)
+  source                   = "../../../modules/infrastructure/aws/ec2"
+  prefix                   = "${var.prefix}-worker-${each.value}"
+  region                   = var.region
+  ssh_key_name             = module.identity.ssh_key_name
+  ssh_key_content          = data.local_file.ssh_private_key.content
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
+  ami_id                   = module.os_image.image_id
+  instance_count           = 1
+  spot_instance            = var.spot_instance
+  create_network_resources = false
+  security_group_id        = module.k3s_first_server.aws_security_group
+  subnet_id                = module.k3s_first_server.aws_subnet
+  user_data                = module.k3s_additional_workers.user_data
 }
 
 data "local_file" "ssh_private_key" {
-  depends_on = [module.k3s_first_server]
+  depends_on = [module.identity]
   filename   = local.ssh_private_key_path
 }
 
@@ -109,10 +121,10 @@ resource "ssh_resource" "retrieve_kubeconfig" {
     module.k3s_servers,
     module.k3s_workers
   ]
-  host = module.k3s_first_server.instances_public_ip[0]
+  host = module.k3s_first_server.instances_public_ip
   commands = [
     "timeout=600; while [ ! -f /etc/rancher/k3s/k3s.yaml ]; do sleep 5; done",
-    "sudo cat /etc/rancher/k3s/k3s.yaml | sed 's/127.0.0.1/${module.k3s_first_server.instances_public_ip[0]}/g'"
+    "sudo cat /etc/rancher/k3s/k3s.yaml | sed -e 's/127.0.0.1/${module.k3s_first_server.instances_public_ip}/g' -e '/certificate-authority-data:/c\\    insecure-skip-tls-verify: true'"
   ]
   user        = local.ssh_username
   private_key = data.local_file.ssh_private_key.content
@@ -143,7 +155,7 @@ module "longhorn" {
   longhorn_host           = local.longhorn_host
   ssh_private_key         = data.local_file.ssh_private_key.content
   node_ips = concat(
-    [module.k3s_first_server.instances_public_ip[0]],
+    [module.k3s_first_server.instances_public_ip],
     flatten([for m in module.k3s_servers : m.instances_public_ip]),
     flatten([for m in module.k3s_workers : m.instances_public_ip])
   )

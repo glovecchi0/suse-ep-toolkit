@@ -1,6 +1,6 @@
-# DigitalOcean K3s Project
+# AWS EC2 RKE2 Project
 
-This project deploys a K3s Kubernetes cluster on DigitalOcean using Terraform/OpenTofu.
+This project deploys an RKE2 Kubernetes cluster on AWS using Terraform/OpenTofu.
 
 The deployment can optionally install and configure:
 
@@ -17,7 +17,7 @@ All components are deployed automatically using reusable modules from the reposi
 - Edit `./terraform.tfvars`
 - Configure the required variables:
   - `prefix` to give the resources an identifiable name (e.g., your initials or first name)
-  - `do_token` to specify the DigitalOcean API token used to create resources
+- Make sure you are logged into your AWS account from your local Terminal. See the preparatory steps [here](../../../modules/infrastructure/aws/README.md).
 
 Example:
 
@@ -110,26 +110,24 @@ neuvector_admin_password = "************"
 
 # Example deployment scenarios
 
-## Minimal single-node K3s cluster
+## Minimal single-node RKE2 cluster
 
 ```hcl
 prefix         = "<PREFIX>"
-do_token       = "<DIGITALOCEAN_TOKEN>"
 instance_count = 1
 ```
 
-## HA K3s cluster with Longhorn
+## HA RKE2 cluster with Longhorn
 
 ```hcl
 prefix                  = "<PREFIX>"
-do_token                = "<DIGITALOCEAN_TOKEN>"
 instance_count          = 3
 
 longhorn_enabled        = true
 longhorn_admin_password = "************"
 ```
 
-## HA K3s cluster with Rancher
+## HA RKE2 cluster with Rancher
 
 ```hcl
 prefix                     = "<PREFIX>"
@@ -227,4 +225,4 @@ Depending on enabled components, the following services become available:
 - SUSE Observability supports Rancher OIDC authentication, which can be enabled by setting `suse_observability_rancher_auth = true`
 - When SUSE Observability is enabled, dedicated Ingress resources for OTLP/gRPC and OTLP/HTTP are automatically created to expose the OpenTelemetry Collector
 - `sslip.io` is used by default for automatic DNS resolution
-- Multi-node deployments automatically configure HA K3s server nodes
+- Multi-node deployments automatically configure HA RKE2 server nodes
