@@ -131,8 +131,6 @@ longhorn_admin_password = "************"
 
 ```hcl
 prefix                     = "<PREFIX>"
-do_token                   = "<DIGITALOCEAN_TOKEN>"
-
 instance_count             = 3
 
 longhorn_enabled           = true
@@ -146,8 +144,6 @@ rancher_bootstrap_password = "************"
 
 ```hcl
 prefix                          = "<PREFIX>"
-do_token                        = "<DIGITALOCEAN_TOKEN>"
-
 instance_count                  = 3
 
 longhorn_enabled                = true

@@ -1,5 +1,5 @@
 ## -- Specifies the prefix added to the names of all resources.
-prefix = "do-rke2"
+prefix = "aws-rke2"
 
 ## -- Specifies the AWS region used for all resources.
 region = "us-east-1"

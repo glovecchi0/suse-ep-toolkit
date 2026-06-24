@@ -1,5 +1,5 @@
 ## -- Specifies the prefix added to the names of all resources.
-prefix = "do-k3s"
+prefix = "aws-k3s"
 
 ## -- Specifies the AWS region used for all resources.
 region = "us-east-1"
