@@ -36,11 +36,11 @@ module "os_image" {
 }
 
 module "rke2_first" {
-  source       = "../../../modules/distribution/rke2"
-  node_role    = "server"
-  rke2_token   = local.rke2_token
-  rke2_version = var.rke2_version
-  rke2_ingress = var.rke2_ingress
+  source        = "../../../modules/distribution/rke2"
+  node_role     = "server"
+  rke2_token    = local.rke2_token
+  rke2_version  = var.rke2_version
+  rke2_ingress  = var.rke2_ingress
   volume_device = local.volume_device
 }
 
@@ -57,12 +57,12 @@ module "rke2_first_server" {
 }
 
 module "rke2_additional_servers" {
-  source       = "../../../modules/distribution/rke2"
-  node_role    = "server"
-  rke2_token   = local.rke2_token
-  rke2_version = var.rke2_version
-  rke2_ingress = var.rke2_ingress
-  server_url   = local.first_server_url
+  source        = "../../../modules/distribution/rke2"
+  node_role     = "server"
+  rke2_token    = local.rke2_token
+  rke2_version  = var.rke2_version
+  rke2_ingress  = var.rke2_ingress
+  server_url    = local.first_server_url
   volume_device = local.volume_device
 }
 
@@ -80,12 +80,12 @@ module "rke2_servers" {
 }
 
 module "rke2_additional_workers" {
-  source       = "../../../modules/distribution/rke2"
-  node_role    = "agent"
-  rke2_token   = local.rke2_token
-  rke2_version = var.rke2_version
-  rke2_ingress = var.rke2_ingress
-  server_url   = local.first_server_url
+  source        = "../../../modules/distribution/rke2"
+  node_role     = "agent"
+  rke2_token    = local.rke2_token
+  rke2_version  = var.rke2_version
+  rke2_ingress  = var.rke2_ingress
+  server_url    = local.first_server_url
   volume_device = local.volume_device
 }
 

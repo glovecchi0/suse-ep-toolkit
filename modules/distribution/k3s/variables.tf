@@ -41,3 +41,9 @@ variable "disable_components" {
   type        = list(string)
   default     = []
 }
+
+variable "volume_device" {
+  description = "Specifies the volume device mounted on the cloud instance. Default is /dev/sda/"
+  type        = string
+  default     = "/dev/sda"
+}

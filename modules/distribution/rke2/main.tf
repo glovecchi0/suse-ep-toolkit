@@ -40,7 +40,7 @@ runcmd:
   - udevadm settle
   # Partition disk
   - |
-      if ! blkid /dev/sda1; then
+      if ! blkid ${local.disk_part}; then
         echo "Partitioning disk..."
         parted ${local.disk_device} --script mklabel gpt
         parted ${local.disk_device} --script mkpart primary xfs 0% 100%
