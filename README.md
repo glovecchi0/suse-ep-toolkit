@@ -38,6 +38,7 @@ The toolkit focuses on:
 
 ### Infrastructure Providers
 
+- AWS
 - DigitalOcean
 
 ## How the repository is structured
@@ -55,9 +56,15 @@ The toolkit focuses on:
 │   │   └── suse-observability/
 │   ├── identity/
 │   │   └── ssh/
+│   │       ├── aws/
+│   │       └── digitalocean/
 │   └── infrastructure/
+│       ├── aws/
 │       └── digitalocean/
 ├── projects/
+│   ├── aws/
+│   │   ├── rke2/
+│   │   └── k3s/
 │   └── digitalocean/
 │       ├── rke2/
 │       └── k3s/
@@ -86,11 +93,13 @@ The `projects/` directory combines multiple modules together to provide ready-to
 
 ### Infrastructure modules
 
+- `aws/ec2`
 - `digitalocean/droplet`
 
 ### Identity modules
 
-- `ssh`
+- `ssh/aws`
+- `ssh/digitalocean`
 
 ## Documentation
 
@@ -102,6 +111,22 @@ Each module contains its own `docs.md` file with:
 - Deployment requirements
 
 ## Available projects
+
+### AWS
+
+- `projects/aws/rke2`
+- `projects/aws/k3s`
+
+This project can deploy:
+
+- Single-node RKE2/K3s clusters
+- Multi-node HA RKE2/K3s clusters
+- Longhorn storage
+- Rancher
+- NeuVector
+- SUSE Observability
+
+using AWS EC2 instances.
 
 ### DigitalOcean
 
