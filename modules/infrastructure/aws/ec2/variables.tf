@@ -72,19 +72,19 @@ variable "data_disk_count" {
 }
 
 variable "data_disk_size" {
-  description = "Specifies the size of each additional data disks attached to the Droplet, in GB. Default is '350'."
+  description = "Specifies the size of each additional data disks attached to the EC2 instance, in GB. Default is '350'."
   type        = number
   default     = 350
 }
 
 variable "ami_id" {
-  description = "Specifies the ID of the custom OS image used to provision all RKE2 cluster droplets. Defailt is empty."
+  description = "Specifies the ID of the custom OS image used to provision all RKE2 cluster EC2 instances. Default is empty."
   type        = string
   default     = ""
 }
 
 variable "user_data" {
-  description = "Specifies cloud-init user_data used to bootstrap the Droplet. Default is 'null'."
+  description = "Specifies cloud-init user_data used to bootstrap the EC2 instance. Default is 'null'."
   type        = string
   default     = null
 }

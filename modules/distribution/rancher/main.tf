@@ -3,7 +3,7 @@ resource "helm_release" "rancher" {
   depends_on       = [null_resource.rancher_tls_secret]
   name             = "rancher"
   namespace        = "cattle-system"
-  repository       = "https://releases.rancher.com/server-charts/stable"
+  repository       = "https://charts.rancher.com/server-charts/prime"
   chart            = "rancher"
   version          = var.rancher_hc_version
   create_namespace = true
