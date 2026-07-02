@@ -59,6 +59,14 @@ runcmd:
         echo "Partitioning disk..."
         parted ${local.disk_device} --script mklabel gpt
         parted ${local.disk_device} --script mkpart primary xfs 0% 100%
+        for i in $(seq 1 60); do
+          if [ -b ${local.disk_part} ]; then
+            echo "Partition ${local.disk_part} found"
+            break
+          fi
+          echo "Waiting for partition ${local.disk_part}..."
+          sleep 2
+        done
         mkfs.xfs -f ${local.disk_part}
       fi
   # Mount rancher storage
@@ -71,6 +79,7 @@ runcmd:
   - mount /var/lib/rancher
   # Verify mount
   - df -h /var/lib/rancher
+%{if var.node_role == "server"~}
   # Configuring Public IP and Private IP on RKE2 config
   - |
       PUBLIC_IP=$(curl -s http://icanhazip.com)
@@ -83,6 +92,7 @@ runcmd:
         - "$PUBLIC_IP"
         - "$PUBLIC_IP.sslip.io"
       EOF_CONFIG
+%{endif~}
   # Install K3s
   - |
       curl -sfL https://get.k3s.io | \
