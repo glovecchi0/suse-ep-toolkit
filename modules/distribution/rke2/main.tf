@@ -44,6 +44,14 @@ runcmd:
         echo "Partitioning disk..."
         parted ${local.disk_device} --script mklabel gpt
         parted ${local.disk_device} --script mkpart primary xfs 0% 100%
+        for i in $(seq 1 60); do
+          if [ -b ${local.disk_part} ]; then
+            echo "Partition ${local.disk_part} found"
+            break
+          fi
+          echo "Waiting for partition ${local.disk_part}..."
+          sleep 2
+        done
         mkfs.xfs -f ${local.disk_part}
       fi
   # Mount rancher storage
@@ -56,6 +64,18 @@ runcmd:
   - mount /var/lib/rancher
   # Verify mount
   - df -h /var/lib/rancher
+  # Configuring Public IP and Private IP on RKE2 config
+  - |
+      PUBLIC_IP=$(curl -s http://icanhazip.com)
+      PRIVATE_IP=$(ip addr show scope global | grep inet | cut -d' ' -f6 | cut -d/ -f1 | grep -v "$PUBLIC_IP" | head -n1)
+      cat <<EOF_CONFIG >> /etc/rancher/rke2/config.yaml
+      node-external-ip: $PUBLIC_IP
+      node-ip: $PRIVATE_IP
+      advertise-address: $PRIVATE_IP
+      tls-san:
+        - "$PUBLIC_IP"
+        - "$PUBLIC_IP.sslip.io"
+      EOF_CONFIG
   # Install RKE2
   - curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=${var.rke2_version} INSTALL_RKE2_TYPE=${local.install_type} sh -
   - systemctl enable rke2-${local.install_type}

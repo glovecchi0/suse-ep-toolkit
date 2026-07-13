@@ -1,10 +1,10 @@
 output "instances_private_ip" {
-  description = "AWS EC2 Instances Private IPs."
+  description = "AWS EC2 Instance Private IPs."
   value       = aws_instance.vm[0].private_ip
 }
 
 output "instances_public_ip" {
-  description = "AWS EC2 Instances Public IPs."
+  description = "AWS EC2 Instance Public IPs."
   value       = aws_eip.static_ip.public_ip
 }
 

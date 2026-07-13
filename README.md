@@ -40,6 +40,7 @@ The toolkit focuses on:
 
 - AWS
 - DigitalOcean
+- Azure
 
 ## How the repository is structured
 
@@ -47,6 +48,9 @@ The toolkit focuses on:
 .
 ├── modules/
 │   ├── custom-os-image/
+│   │   ├── aws/
+│   │   ├── azure/
+│   │   └── digitalocean/
 │   ├── distribution/
 │   │   ├── longhorn/
 │   │   ├── neuvector/
@@ -57,12 +61,17 @@ The toolkit focuses on:
 │   ├── identity/
 │   │   └── ssh/
 │   │       ├── aws/
+│   │       ├── azure/
 │   │       └── digitalocean/
 │   └── infrastructure/
 │       ├── aws/
+│       ├── azure/
 │       └── digitalocean/
 ├── projects/
 │   ├── aws/
+│   │   ├── rke2/
+│   │   └── k3s/
+│   ├── azure/
 │   │   ├── rke2/
 │   │   └── k3s/
 │   └── digitalocean/
@@ -95,11 +104,13 @@ The `projects/` directory combines multiple modules together to provide ready-to
 
 - `aws/ec2`
 - `digitalocean/droplet`
+- `azure/virtual-machine`
 
 ### Identity modules
 
 - `ssh/aws`
 - `ssh/digitalocean`
+- `ssh/azure`
 
 ## Documentation
 
@@ -143,6 +154,22 @@ This project can deploy:
 - SUSE Observability
 
 using DigitalOcean Droplets.
+
+### Azure
+
+- `projects/digitalocean/rke2`
+- `projects/digitalocean/k3s`
+
+This project can deploy:
+
+- Single-node RKE2/K3s clusters
+- Multi-node HA RKE2/K3s clusters
+- Longhorn storage
+- Rancher
+- NeuVector
+- SUSE Observability
+
+using Azure Virtual Machines.
 
 ## Features
 
