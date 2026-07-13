@@ -1,11 +1,11 @@
 variable "prefix" {
-  description = "Specifies the prefix added to the names of all resources. Default is empty."
+  description = "Specifies the prefix added to the names of all resources. Default is 'azure-tf'."
   type        = string
   default     = "azure-tf"
 }
 
 variable "subscription_id" {
-  description = "Specifies the Azure Subscription ID that will contain all created resources. Default is 'azure-tf'."
+  description = "Specifies the Azure Subscription ID that will contain all created resources. Default is empty."
   type        = string
   default     = ""
 }

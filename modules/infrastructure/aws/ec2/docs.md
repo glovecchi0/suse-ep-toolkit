@@ -59,5 +59,5 @@ No modules.
 |------|-------------|
 | <a name="output_aws_security_group"></a> [aws\_security\_group](#output\_aws\_security\_group) | AWS Security Group. |
 | <a name="output_aws_subnet"></a> [aws\_subnet](#output\_aws\_subnet) | AWS Subnet. |
-| <a name="output_instances_private_ip"></a> [instances\_private\_ip](#output\_instances\_private\_ip) | AWS EC2 Instances Private IPs. |
-| <a name="output_instances_public_ip"></a> [instances\_public\_ip](#output\_instances\_public\_ip) | AWS EC2 Instances Public IPs. |
+| <a name="output_instances_private_ip"></a> [instances\_private\_ip](#output\_instances\_private\_ip) | AWS EC2 Instance Private IPs. |
+| <a name="output_instances_public_ip"></a> [instances\_public\_ip](#output\_instances\_public\_ip) | AWS EC2 Instance Public IPs. |

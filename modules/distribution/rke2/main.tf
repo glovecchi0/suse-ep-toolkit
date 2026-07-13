@@ -76,7 +76,6 @@ runcmd:
         - "$PUBLIC_IP"
         - "$PUBLIC_IP.sslip.io"
       EOF_CONFIG
-
   # Install RKE2
   - curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=${var.rke2_version} INSTALL_RKE2_TYPE=${local.install_type} sh -
   - systemctl enable rke2-${local.install_type}

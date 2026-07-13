@@ -2,10 +2,14 @@ variable "prefix" {
   description = "Specifies the prefix added to the names of all resources. Default is 'azure-tf'."
   type        = string
   default     = "azure-tf"
+  validation {
+    condition     = can(regex("^[a-z0-9\\-.]+$", var.prefix))
+    error_message = "a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.'"
+  }
 }
 
 variable "resource_group" {
-  description = "Specifies the resource group where resources will be allocated"
+  description = "Specifies the resource group where resources will be allocated. Default is 'null'."
   type = object({
     name     = string
     location = string
@@ -88,7 +92,7 @@ variable "ssh_public_key_content" {
 }
 
 variable "instance_count" {
-  description = "Specifies the number of Azure Virtual Machines to create. Default is 1."
+  description = "Specifies the number of Azure Virtual Machines to create. Default is '1'."
   type        = number
   default     = 1
 }
@@ -131,13 +135,13 @@ variable "os_disk_type" {
 }
 
 variable "os_disk_size" {
-  description = "Size of the root disk attached to each node, specified in GB"
+  description = "Specifies the size of the disk attached to each node, in GB. Default is '100'."
   type        = string
   default     = "100"
 }
 
 variable "data_disk_count" {
-  description = "Specifies the number of additional data disks to attach to each VM instance. Default is 1."
+  description = "Specifies the number of additional data disks to attach to each VM instance. Default is '1'."
   type        = number
   default     = 1
 }
@@ -149,7 +153,7 @@ variable "data_disk_type" {
 }
 
 variable "data_disk_size" {
-  description = "Size of the additional disk attached to each node, specified in GB"
+  description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'."
   type        = number
   default     = 350
 }
@@ -161,13 +165,13 @@ variable "user_data" {
 }
 
 variable "ip_cidr_range" {
-  description = "Specifies the range of private IPs available for the AWS Subnet and VPC. Default is '10.10.0.0'."
+  description = "Specifies the range of private IPs available for the Azure Subnet and VNet. Default is '10.10.0.0'."
   type        = string
   default     = "10.10.0.0/24"
 }
 
 variable "create_network_resources" {
-  description = "Specifies whether to create the VPC networking resources (security group and related resources). Default is 'false'."
+  description = "Specifies whether to create the VNet networking resources (security group and related resources). Default is 'false'."
   type        = bool
   default     = false
 }

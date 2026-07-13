@@ -9,11 +9,11 @@ output "instances_public_ip" {
 }
 
 output "azure_subnet" {
-  description = "Azure subnet."
+  description = "Azure Subnet."
   value       = var.create_network_resources ? azurerm_subnet.subnet[0].id : null
 }
 
 output "azure_nsg" {
-  description = "Azure Network Security Group"
+  description = "Azure Network Security Group."
   value       = var.create_network_resources ? azurerm_network_security_group.nsg[0].id : null
 }

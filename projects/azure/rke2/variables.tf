@@ -5,7 +5,7 @@ variable "prefix" {
 }
 
 variable "subscription_id" {
-  description = "Specifies the Azure Subscription ID that will contain all created resources. Default is 'azure-tf'."
+  description = "Specifies the Azure Subscription ID that will contain all created resources. Default is empty."
   type        = string
   default     = ""
 }
@@ -114,7 +114,7 @@ variable "instance_type" {
 }
 
 variable "data_disk_size" {
-  description = "Specifies the size of the additional data disks attached to the Azure Virtual Machine, in GB. Default is '350'."
+  description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'."
   type        = number
   default     = 350
 }

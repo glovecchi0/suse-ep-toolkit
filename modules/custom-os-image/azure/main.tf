@@ -62,12 +62,11 @@ resource "azurerm_storage_container" "vhds" {
 }
 
 resource "azurerm_storage_blob" "ep_toolkit_vhd" {
-  depends_on             = [null_resource.download_image]
-  name                   = "harvestercloudcertified.vhd"
-  storage_account_name   = azurerm_storage_account.vhd.name
-  storage_container_name = azurerm_storage_container.vhds.name
-  type                   = "Page"
-  source                 = "${path.cwd}/${local.certified_image_name}"
+  depends_on           = [null_resource.download_image]
+  name                 = "harvestercloudcertified.vhd"
+  storage_container_id = azurerm_storage_container.vhds.id
+  type                 = "Page"
+  source               = "${path.cwd}/${local.certified_image_name}"
 }
 
 resource "null_resource" "wait_blob_accessible" {
@@ -76,7 +75,6 @@ resource "null_resource" "wait_blob_accessible" {
     command = <<EOT
       BLOB_URI=${azurerm_storage_blob.ep_toolkit_vhd.url}
       ACCOUNT_KEY=$(az storage account keys list -g ${azurerm_resource_group.rg.name} -n ${azurerm_storage_account.vhd.name} --query '[0].value' -o tsv)
-
       for i in {1..20}; do
         az disk create --name temp-check-disk --resource-group ${azurerm_resource_group.rg.name} --source "$BLOB_URI" --location ${azurerm_resource_group.rg.location} --sku Standard_LRS > /dev/null 2>&1 && break || echo "Blob not ready, retry in 15s" && sleep 15
       done
