@@ -114,10 +114,10 @@ neuvector_admin_password = "************"
 ## Minimal single-node K3s cluster
 
 ```hcl
-prefix         = "<PREFIX>"
-subscription_id         = "<SUBSCRIPTION_ID>"
+prefix          = "<PREFIX>"
+subscription_id = "<SUBSCRIPTION_ID>"
 
-instance_count = 1
+instance_count  = 1
 ```
 
 ## HA K3s cluster with Longhorn
@@ -150,7 +150,7 @@ rancher_bootstrap_password = "************"
 
 ```hcl
 prefix                          = "<PREFIX>"
-subscription_id            = "<SUBSCRIPTION_ID>"
+subscription_id                 = "<SUBSCRIPTION_ID>"
 instance_count                  = 3
 
 longhorn_enabled                = true
