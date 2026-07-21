@@ -50,33 +50,39 @@ The toolkit focuses on:
 │   ├── custom-os-image/
 │   │   ├── aws/
 │   │   ├── azure/
-│   │   └── digitalocean/
+│   │   ├── digitalocean/
+│   │   └── google-cloud/
 │   ├── distribution/
+│   │   ├── k3s/
 │   │   ├── longhorn/
 │   │   ├── neuvector/
 │   │   ├── rancher/
 │   │   ├── rke2/
-│   │   ├── k3s/
 │   │   └── suse-observability/
 │   ├── identity/
 │   │   └── ssh/
 │   │       ├── aws/
 │   │       ├── azure/
-│   │       └── digitalocean/
+│   │       ├── digitalocean/
+│   │       └── google-cloud/
 │   └── infrastructure/
 │       ├── aws/
 │       ├── azure/
-│       └── digitalocean/
+│       ├── digitalocean/
+│       └── google-cloud/
 ├── projects/
 │   ├── aws/
-│   │   ├── rke2/
-│   │   └── k3s/
+│   │   ├── k3s/
+│   │   └── rke2/
 │   ├── azure/
-│   │   ├── rke2/
-│   │   └── k3s/
-│   └── digitalocean/
-│       ├── rke2/
-│       └── k3s/
+│   │   ├── k3s/
+│   │   └── rke2/
+│   ├── digitalocean/
+│   │   ├── k3s/
+│   │   └── rke2/
+│   └── google-cloud/
+│       ├── k3s/
+│       └── rke2/
 └── README.md
 ```
 
@@ -105,12 +111,14 @@ The `projects/` directory combines multiple modules together to provide ready-to
 - `aws/ec2`
 - `digitalocean/droplet`
 - `azure/virtual-machine`
+- `google-cloud/compute-engine`
 
 ### Identity modules
 
 - `ssh/aws`
 - `ssh/digitalocean`
 - `ssh/azure`
+- `ssh/google-cloud`
 
 ## Documentation
 
@@ -170,6 +178,22 @@ This project can deploy:
 - SUSE Observability
 
 using Azure Virtual Machines.
+
+### Google Cloud
+
+- `projects/google-cloud/rke2`
+- `projects/google-cloud/k3s`
+
+This project can deploy:
+
+- Single-node RKE2/K3s clusters
+- Multi-node HA RKE2/K3s clusters
+- Longhorn storage
+- Rancher
+- NeuVector
+- SUSE Observability
+
+using Google Cloud Compute Engine VM instances.
 
 ## Features
 
